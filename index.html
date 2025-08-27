@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Intake Form [Standalone & Complete]</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root {
+            --color-primary-light: #002039; --color-secondary-light: #FF9500;
+            --color-text-light: #1c1c1e; --color-bg-light: #f2f2f7; --color-card-bg-light: #ffffff;
+            --color-primary-dark: #0A84FF; --color-secondary-dark: #FF9F0A;
+            --color-text-dark: #E5E5EA; --color-bg-dark: #0d1b2a; --color-card-bg-dark: #1b263b;
+            --primary-color: var(--color-primary-light); --secondary-color: var(--color-secondary-light);
+            --text-color: var(--color-text-light); --bg-color: var(--color-bg-light); --card-bg-color: var(--color-card-bg-light);
+            --link-color: var(--color-primary-light);
+            --input-border-color: #d1d5db; --input-bg-color: var(--card-bg-color); --input-text-color: var(--text-color);
+            --input-focus-border-color: var(--primary-color);
+            --checklist-item-bg-hover: #e9ecef;
+        }
+        html.light {
+            --primary-color: var(--color-primary-light); --secondary-color: var(--color-secondary-light);
+            --text-color: var(--color-text-light); --bg-color: var(--color-bg-light); --card-bg-color: var(--color-card-bg-light);
+            --link-color: var(--color-primary-light); --input-border-color: #d1d5db; --input-bg-color: #ffffff;
+            --input-focus-border-color: var(--color-primary-light); --checklist-item-bg-hover: #f3f4f6;
+        }
+        html.dark {
+            --primary-color: var(--color-primary-dark); --secondary-color: var(--color-secondary-dark);
+            --text-color: var(--color-text-dark); --bg-color: var(--color-bg-dark); --card-bg-color: var(--color-card-bg-dark);
+            --link-color: var(--color-primary-dark); --input-border-color: #4b5563; --input-bg-color: #1b263b;
+            --input-focus-border-color: var(--color-primary-dark); --checklist-item-bg-hover: #2c3e50;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: var(--text-color); background-color: var(--bg-color); }
+        .main-layout { display: flex; justify-content: center; align-items: flex-start; gap: 2rem; padding: 2rem 1rem; }
+        .form-column { flex-grow: 1; max-width: 700px; }
+        .ad-column { width: 300px; flex-shrink: 0; position: sticky; top: 2rem; }
+        @media (max-width: 992px) { .ad-column { display: none; } .form-column { max-width: 100%; } .main-layout { padding: 1rem; } }
+        .form-wrapper { background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); overflow: hidden; }
+        .form-header { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background-color: #002039; }
+        .form-header .logo { max-height: 30px; cursor: pointer; }
+        .form-header .theme-toggle-button { background-color: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+        .form-content { padding: 2.5rem; min-height: 400px; display: flex; flex-direction: column; justify-content: center;}
+        .form-title { font-size: 1.8rem; font-weight: 700; margin: 0 0 1.5rem; color: var(--primary-color); text-align: center; }
+        .form-group p.helper-text { font-size: 1rem; color: var(--text-color); text-align: center; max-width: 500px; margin: -1rem auto 1.5rem; line-height: 1.5; }
+        .form-input, .form-textarea { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--input-border-color); border-radius: 8px; background-color: var(--input-bg-color); color: var(--input-text-color); font-size: 1rem; }
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--input-focus-border-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus-border-color) 20%, transparent); }
+        .form-textarea { min-height: 100px; resize: vertical; }
+        .error-message { color: #bf0a28; background-color: #fdecea; padding: 0.75rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; margin-top: 1rem; text-align: center; }
+        .form-actions { margin-top: 2.5rem; display: flex; justify-content: center; gap: 1rem; }
+        .cta-button { display: inline-block; background-color: var(--secondary-color); color: white !important; padding: 14px 30px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s ease; border: none; cursor: pointer; text-align: center; font-size: 1rem; text-decoration: none; }
+        .cta-button:hover { background-color: color-mix(in srgb, var(--secondary-color) 85%, black); transform: translateY(-2px); }
+        .cta-button.secondary { background-color: color-mix(in srgb, var(--input-border-color) 50%, transparent); color: var(--text-color) !important; }
+        .checklist-item { display: flex; align-items: center; padding: 1rem; margin-bottom: 0.75rem; border-radius: 8px; border: 1px solid var(--input-border-color); cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
+        .checklist-item:hover { background-color: var(--checklist-item-bg-hover); }
+        .checklist-item.selected { border-color: var(--primary-color); background-color: color-mix(in srgb, var(--primary-color) 8%, transparent); font-weight: 600; }
+        .checklist-item input { display: none; }
+        .custom-icon { width: 1.5em; height: 1.5em; border: 2px solid var(--primary-color); margin-right: 1rem; flex-shrink: 0; position: relative; transition: all 0.2s ease-in-out; }
+        .custom-icon.radio { border-radius: 50%; }
+        .custom-icon.checkbox { border-radius: 0.25em; }
+        input:checked + .custom-icon { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .custom-icon::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); transition: transform 0.2s ease-in-out; }
+        input[type="radio"]:checked + .custom-icon::before { width: 0.75em; height: 0.75em; border-radius: 50%; background-color: var(--card-bg-color); transform: translate(-50%, -50%) scale(1); }
+        input[type="checkbox"]:checked + .custom-icon::before { width: 5px; height: 10px; border: solid var(--card-bg-color); border-width: 0 3px 3px 0; transform: translate(-50%, -60%) rotate(45deg) scale(1); }
+        .item-label { color: var(--text-color); font-size: 1rem; flex-grow: 1; cursor: pointer; margin-bottom: 0; }
+        .ending-screen, .resource-section { text-align: center; padding: 2rem; }
+        .ending-screen h2 { color: var(--primary-color); font-size: 1.8rem; }
+        .ending-screen p { color: #486581; font-size: 1.1rem; line-height: 1.6; }
+        .resource-section h3 { font-size: 1.4rem; color: var(--text-color); }
+        .resource-link { display: block; padding: 1rem; margin-top: 1rem; background-color: var(--bg-color); border-radius: 8px; text-decoration: none; color: var(--link-color); font-weight: 600; border: 1px solid var(--input-border-color); }
+        .skyscraper-ad, .text-promo-banner { background-color: var(--card-bg-color); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+        .skyscraper-ad h3, .text-promo-banner h3 { font-size: 1.25rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .skyscraper-ad p, .text-promo-banner p { font-size: 0.95rem; color: var(--text-color); margin-bottom: 1rem; }
+        .skyscraper-ad .qr-code { max-width: 150px; margin: 1rem auto; padding: 10px; background-color: white; border-radius: 8px; }
+        .skyscraper-ad .qr-code img { width: 100%; display: block; }
+        .text-promo-banner { margin-top: 2rem; padding-bottom: 0.5rem; }
+        .text-promo-banner p { margin-bottom: 0.75rem; }
+        .text-promo-banner .promo-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .text-promo-banner .cta-button { background-color: var(--primary-color); color: var(--card-bg-color) !important; padding: 10px 20px; font-size: 0.9rem; }
+        .text-promo-banner em { font-size: 0.8rem; color: #86868b; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .cal-month-year { font-weight: 600; font-size: 1.2rem; color: var(--primary-color); }
+        .cal-nav-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color); padding: 5px 15px; }
+        .week-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 600; color: #86868b; margin-bottom: 5px; font-size: 0.9rem; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 1rem; }
+        .calendar-day { padding: 10px; text-align: center; border-radius: 50%; cursor: pointer; transition: background-color 0.2s; }
+        .calendar-day:not(.disabled):not(.other-month):hover { background-color: var(--checklist-item-bg-hover); }
+        .calendar-day.selected { background-color: var(--primary-color); color: var(--card-bg-color); font-weight: bold; }
+        .calendar-day.disabled { color: #d1d5db; cursor: not-allowed; }
+        html.dark .calendar-day.disabled { color: #4b5563; }
+        .calendar-day.other-month { visibility: hidden; }
+        .time-slots { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--input-border-color); }
+        .time-slots h4 { width: 100%; text-align: center; font-size: 1rem; font-weight: 500; color: var(--text-color); }
+        .time-slot { padding: 10px 20px; border: 1px solid var(--input-border-color); border-radius: 20px; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
+        .time-slot.selected { background-color: var(--primary-color); color: var(--card-bg-color); border-color: var(--primary-color); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        //======= All UI Components are defined first for stability =======//
+        const StaticMessage = ({ title, helperText }) => ( <div className="form-group"><h2 className="form-title">{title}</h2>{helperText && <p className="helper-text">{helperText}</p>}</div> );
+        const NameInput = ({ formData, handleChange }) => ( <div className="form-group"><h2 className="form-title">Your Name</h2><input type="text" name="firstName" value={formData.firstName || ''} onChange={handleChange} placeholder="First Name" className="form-input" style={{marginBottom: '10px'}} /><input type="text" name="lastName" value={formData.lastName || ''} onChange={handleChange} placeholder="Last Name" className="form-input" /></div> );
+        const ContactInput = ({ formData, handleChange }) => {
+            const handlePhoneChange = (e) => { const val = e.target.value.replace(/\D/g, '').substring(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3'); handleChange({ target: { name: 'phone', value: val } }); };
+            return (<div className="form-group"><h2 className="form-title">Contact Info</h2><input type="tel" name="phone" value={formData.phone || ''} onChange={handlePhoneChange} placeholder="Phone Number" className="form-input" style={{marginBottom: '10px'}} /><input type="email" name="email" value={formData.email || ''} onChange={handleChange} placeholder="Email Address" className="form-input" /></div>);
+        };
+        const AddressInput = ({ formData, handleChange }) => (<div className="form-group"><h2 className="form-title">Mailing Address</h2><input name="street" value={formData.street || ''} onChange={handleChange} placeholder="Street Address" className="form-input" style={{marginBottom:'10px'}}/><input name="city" value={formData.city || ''} onChange={handleChange} placeholder="City" className="form-input" /></div>);
+        const TextInput = ({ title, type, name, value, handleChange }) => ( <div className="form-group"><h2 className="form-title">{title}</h2><input type={type} name={name} value={value || ''} onChange={handleChange} className="form-input" /></div> );
+        const TextareaInput = ({ title, name, value, handleChange }) => ( <div className="form-group"><h2 className="form-title">{title}</h2><textarea name={name} value={value || ''} onChange={handleChange} className="form-textarea" /></div> );
+        const RadioGroup = ({ title, options, name, value, handleChange }) => ( <div className="form-group"><h2 className="form-title">{title}</h2>{options.map(opt => ( <label className={`checklist-item ${value === opt.value ? 'selected' : ''}`} key={opt.value}><input type="radio" name={name} value={opt.value} checked={value === opt.value} onChange={handleChange} /><span className="custom-icon radio"></span><span className="item-label">{opt.label}</span></label> ))}</div> );
+        const CheckboxGroup = ({ title, options, name, value, handleChange, formData }) => {
+            const handleCheckChange = (e) => { const { value: val, checked } = e.target; const currentValues = value || []; const optionData = options.find(o => o.value === val); if (optionData && optionData.required && !checked) { return; } const newValues = checked ? [...currentValues, val] : currentValues.filter(v => v !== val); handleChange({ target: { name, value: newValues } }); };
+            return ( <div className="form-group"><h2 className="form-title">{typeof title === 'function' ? title(formData) : title}</h2>{options.map(opt => ( <label className={`checklist-item ${(value || []).includes(opt.value) ? 'selected' : ''}`} key={opt.value}><input type="checkbox" value={opt.value} checked={(value || []).includes(opt.value)} onChange={handleCheckChange}/><span className="custom-icon checkbox"></span><span className="item-label">{opt.label}</span></label>))}</div> );
+        }
+        const CalendarScheduler = ({ name, value, handleChange }) => {
+            const [viewDate, setViewDate] = useState(new Date());
+            const [selectedDay, setSelectedDay] = useState((value && value.day) || null);
+            const handleDayClick = (day) => setSelectedDay(day);
+            const handleTimeClick = (time) => handleChange({target: { name, value: {day: selectedDay, time, display: `${viewDate.toLocaleString('default', { month: 'long' })} ${selectedDay}`} }});
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const goToPrevMonth = () => { const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1); const lastDayOfNewMonth = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0); if (lastDayOfNewMonth < today) return; setViewDate(newDate); };
+            const goToNextMonth = () => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+            const monthName = viewDate.toLocaleString('default', { month: 'long' }); const year = viewDate.getFullYear();
+            const daysInMonth = new Date(year, viewDate.getMonth() + 1, 0).getDate(); const firstDayOfMonth = new Date(year, viewDate.getMonth(), 1).getDay();
+            const calendarDays = [];
+            for (let i = 0; i < firstDayOfMonth; i++) { calendarDays.push(<div className="calendar-day other-month" key={`empty-${i}`}></div>); }
+            for (let i = 1; i <= daysInMonth; i++) { const fullDate = new Date(year, viewDate.getMonth(), i); const isDisabled = fullDate < today; calendarDays.push( <div key={i} onClick={() => !isDisabled && handleDayClick(i)} className={`calendar-day ${selectedDay === i ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}> {i} </div> ); }
+            return ( <div className="form-group"><h2 className="form-title">Schedule Your Call</h2><div className="calendar-header"><button type="button" onClick={goToPrevMonth} className="cal-nav-btn">&lt;</button><div className="cal-month-year">{monthName} {year}</div><button type="button" onClick={goToNextMonth} className="cal-nav-btn">&gt;</button></div><div className="week-days"><div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div></div><div className="calendar-grid">{calendarDays}</div>{selectedDay && <div className="time-slots"><h4>Available times for {monthName} {selectedDay}:</h4>{['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM'].map(time => <div key={time} onClick={() => handleTimeClick(time)} className={`time-slot ${(value && value.time === time && value.day === selectedDay) ? 'selected' : ''}`}>{time}</div>)}</div>}</div> );
+        };
+        const CongratulationsScreen = ({ formData, onNext }) => {
+            let callMessage = "soon";
+            if (formData.scheduleOption === 'appointment' && formData.calendar?.display) { callMessage = `on ${formData.calendar.display} at ${formData.calendar.time}`; }
+            let confirmationText = `A skilled Quit Coach will call you ${callMessage}.`;
+            return ( <div className="ending-screen"><div className="form-content"><h2>Congratulations!</h2><p>{confirmationText}</p><div className="form-actions"><button onClick={onNext} className="cta-button">View Final Resources</button></div></div></div> );
+        };
+        const ResourceScreen = ({ formData }) => {
+            const [email, setEmail] = useState(formData.email || '');
+            const handleEmailExport = () => {
+                const labelMap = { firstName: 'First Name', lastName: 'Last Name', phone: 'Phone', email: 'Email', age: 'Age', quitReason: 'My #1 Reason for Quitting', };
+                let summary = "Your Intake Summary:\n--------------------\n";
+                for (const key in labelMap) { if (formData[key]) { summary += `${labelMap[key]}: ${formData[key]}\n`; } }
+                let importantDates = "";
+                if (formData.quitDateTarget) { const date = new Date(formData.quitDateTarget + 'T12:00:00'); const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); importantDates += `* YOUR TARGET QUIT DATE: ${formattedDate} *\n`; }
+                if (formData.scheduleOption === 'appointment' && formData.calendar?.display) { importantDates += `* YOUR COACHING CALL: ${formData.calendar.display} at ${formData.calendar.time} *\n`; }
+                let nextSteps = "\nHere are your next steps on your quit journey:\n\n1. Await the Call: A Quit Coach will be calling you soon.\n2. Explore the App: Use the Kick It California app for daily tips.\n3. Prepare for your Quit Date: If you set a target date, start preparing mentally.";
+                const body = nextSteps + (importantDates ? "\n--- Your Key Dates ---\n" + importantDates : '') + "\n\n" + summary;
+                const subject = "My Kick It California Quit Plan";
+                window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            };
+            return ( <div className="resource-section"><div className="form-content"><h3>You can Quit. We Can Help.</h3><p>Here are some resources to help guide you.</p><a href="https://131650.hs-sites-na2.com/quit-plan" target="_blank" rel="noopener noreferrer" className="resource-link">Create Your Quit Plan</a><a href="https://131650.hs-sites-na2.com/kick-it-2" target="_blank" rel="noopener noreferrer" className="resource-link">Explore a Kick It Story</a><div style={{marginTop: '2rem', borderTop: '1px solid var(--input-border-color)', paddingTop: '2rem'}}><h4 className="form-title" style={{fontSize: '1.2rem'}}>Get a Copy of Your Plan</h4><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="form-input" placeholder="Enter your email address"/><button onClick={handleEmailExport} className="cta-button" style={{marginTop:'1rem'}}>Email My Plan</button></div></div></div> );
+        };
+        const SkyscraperAd = () => (<div className="skyscraper-ad"><h3>Take Your Quit Plan To Go</h3><p>Get daily tracking and resources right on your phone.</p><div className="qr-code"><img src="https://static.wixstatic.com/media/43bd37_ea63780811cb4d618e8b28208c7c3bfe~mv2.png" alt="QR Code for Kick It App" /></div><p style={{fontSize: '0.8rem'}}>Scan with your camera.</p></div>);
+        const TextProgramPromo = () => ( <div className="text-promo-banner"><h3>Join our Text Program.</h3><p>Tap below to start. A Quit Coach will respond.</p><div className="promo-buttons"><a href="sms:66819?&body=Quit%20Smoking" className="cta-button">Text "Quit Smoking" to 66819</a><a href="sms:66819?&body=Quit%20Vaping" className="cta-button">Text "Quit Vaping" to 66819</a></div><p><em><small>*Message & data rates may apply.</small></em></p></div> );
+
+        const componentMap = { StaticMessage, NameInput, ContactInput, AddressInput, TextInput, TextareaInput, RadioGroup, CheckboxGroup, CalendarScheduler };
+
+        const App = () => {
+            const initialData = { isForSelf: 'true', agreements: ['calls'] };
+            const [formData, setFormData] = useState(initialData);
+            const [appState, setAppState] = useState('FORM');
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [error, setError] = useState('');
+            const [theme, setTheme] = useState('light');
+
+            const needsDoctorApproval = (data) => data.heartAttackLast6Months === 'yes' || data.strokeLast6Months === 'yes' || data.isBreastfeeding === 'yes';
+
+            const formFlow = [
+                { id: 'intro', component: 'StaticMessage', props: { title: 'Choose your approach and start quitting today.', helperText: 'Kick It California offers a range of services, from one-on-one Quit Coaching to text programs and self-help materials. The following questions will sign you up for free one-on-one Quit Coaching.' } },
+                { id: 'name', component: 'NameInput', required: true },
+                { id: 'contact', component: 'ContactInput', required: true },
+                { id: 'zipCode', component: 'TextInput', props: { title: 'California ZIP Code' }, validate: (val) => val && val.length === 5 && parseInt(val) >= 90001 && parseInt(val) <= 96162, errorMessage: 'Please enter a valid California ZIP Code.', required: true },
+                { id: 'agreements', component: 'CheckboxGroup', props: { title: 'Review & Agree', options: [{label: 'I agree to receive phone calls. I’m at least 13 years old.*', value: 'calls', required: true}, {label: 'I agree to receive SMS messages.', value: 'sms'}]} },
+                { id: 'isForSelf', component: 'RadioGroup', props: { title: 'Who is this for?', options: [{label:'Myself', value: 'true'}, {label:'For someone else', value: 'false'}]}},
+                { id: 'scheduleOption', component: 'RadioGroup', props: { title: 'How would you like to connect?', options: [{label: 'Schedule an appointment', value: 'appointment'}, {label: 'Call me as soon as possible', value: 'asap'}]}, required: true },
+                { id: 'calendar', component: 'CalendarScheduler', condition: data => data.scheduleOption === 'appointment', required: true },
+                { id: 'quitTypes', component: 'CheckboxGroup', props: { title: (formData) => formData.isForSelf === 'true' ? "What are we helping you with today?" : "What do you want to help someone with today?", options: [{label:'Quit Smoking', value: 'smoking'}, {label:'Quit Vaping', value: 'vaping'}, {label:'Quit Smokeless', value: 'smokeless'}]}},
+                { id: 'proxyExit', component: 'StaticMessage', condition: data => data.isForSelf === 'false', props: { title: 'Thank you!', helperText: 'We will send helpful resources to the email you provided. For immediate assistance, they can call 1-800-300-8086.' } },
+                { id: 'age', component: 'TextInput', condition: data => data.isForSelf === 'true', props: { title: 'Your Age', type: 'number' }, validate: (val) => val >= 13, errorMessage: 'You must be 13 or older for coaching.', required: true, },
+                { id: 'householdInfo', component: 'CheckboxGroup', condition: data => data.isForSelf === 'true', props: { title: 'Do any of these apply to your household?', options: [{label: 'A child 5 or younger lives in my home', value: 'child'}, {label: 'I am currently pregnant', value: 'pregnant_self'}, {label: 'Someone else in my home is pregnant', value: 'pregnant_other'}, {label:'None of these', value:'none'}]} },
+                { id: 'nrtInterest', component: 'RadioGroup', condition: (data) => data.age >= 18 && data.isForSelf === 'true', props: { title: 'Interested in a free Nicotine Patch starter kit?', options: [{label: 'Yes, tell me more', value: 'yes'}, {label: 'No, thanks', value: 'no'}]} },
+                { id: 'smokeFrequency', component: 'RadioGroup', condition: (data) => data.nrtInterest === 'yes', props: { title: 'Do you smoke cigarettes daily?', options: [{label:'Every day', value:'everyday'}, {label:'Some days or not at all', value:'not_daily'}]} },
+                { id: 'nrtNonDailySmoker', component: 'StaticMessage', condition: (data) => data.nrtInterest === 'yes' && data.smokeFrequency === 'not_daily', props: { title: "We'll discuss on your call", helperText: 'A Quit Coach will go over patch eligibility for non-daily smokers with you.'} },
+                { id: 'cigsPerDay', component: 'TextInput', condition: (data) => data.smokeFrequency === 'everyday', props: { title: 'On average, how many cigarettes per day?', type: 'number' }, required: true },
+                { id: 'heartAttack', component: 'RadioGroup', condition: (data) => data.smokeFrequency === 'everyday', props: { title: 'Have you ever had a heart attack?', options: [{label:'Yes', value:'yes'}, {label:'No', value:'no'}]} },
+                { id: 'heartAttackLast6Months', component: 'RadioGroup', condition: (data) => data.heartAttack === 'yes', props: { title: 'Was it in the last 6 months?', options: [{label:'Yes', value:'yes'}, {label:'No', value:'no'}]} },
+                { id: 'stroke', component: 'RadioGroup', condition: (data) => data.smokeFrequency === 'everyday', props: { title: 'Have you ever had a stroke?', options: [{label:'Yes', value:'yes'}, {label:'No', value:'no'}]} },
+                { id: 'strokeLast6Months', component: 'RadioGroup', condition: (data) => data.stroke === 'yes', props: { title: 'Was it in the last 6 months?', options: [{label:'Yes', value:'yes'}, {label:'No', value:'no'}]} },
+                { id: 'isBreastfeeding', component: 'RadioGroup', condition: (data) => data.smokeFrequency === 'everyday', props: { title: 'Are you currently breastfeeding?', options: [{label:'Yes', value:'yes'}, {label:'No', 'value':'no'}]} },
+                { id: 'address', component: 'AddressInput', condition: (data) => data.smokeFrequency === 'everyday', required: true },
+                { id: 'doctorApproval', component: 'RadioGroup', condition: (data) => needsDoctorApproval(data), props: { title: 'It looks like we’ll need doctor’s approval for the patches. Is that ok?', options: [{label:'Yes', value:'yes'}, {label:'No', value:'no'}]} },
+                { id: 'dob', component: 'TextInput', condition: (data) => data.doctorApproval === 'yes', props: { title: 'What is your date of birth?', placeholder: 'MM/DD/YYYY' }, required: true },
+                { id: 'setQuitDatePrompt', component: 'RadioGroup', condition: data => data.isForSelf === 'true', props: { title: 'Ready to take the next step?', options: [{label: 'Yes, let\'s set a quit date now', value: 'yes'}, {label: 'No, I\'ll decide with my coach', value: 'no'}]}, required: true },
+                { id: 'quitReason', component: 'TextareaInput', condition: data => data.setQuitDatePrompt === 'yes', props: { title: 'What’s your #1 reason for quitting?' }, required: true },
+                { id: 'quitDateTarget', component: 'TextInput', condition: data => data.setQuitDatePrompt === 'yes', props: { title: 'What is your target quit date?', type: 'date' }, required: true },
+                { id: 'finalWelcome', component: 'StaticMessage', props: { title: 'You\'re taking the most important step!', helperText: 'Phone coaching with a trained specialist can double your chances of quitting for good.'} },
+            ];
+
+            useEffect(() => { document.documentElement.className = theme; }, [theme]);
+            
+            const handleRestart = () => { setFormData({ isForSelf: 'true', agreements: ['calls'] }); setCurrentIndex(0); setAppState('FORM'); setError(''); };
+            const handleChange = (e) => { const { name, value } = e.target; setFormData(prev => ({...prev, [name]: value})); };
+            const findNextIndex = (startIndex) => { let nextIndex = startIndex + 1; while(nextIndex < formFlow.length && formFlow[nextIndex].condition && !formFlow[nextIndex].condition(formData)) { nextIndex++; } return nextIndex; };
+            const findPrevIndex = (startIndex) => { let prevIndex = startIndex - 1; while(prevIndex >= 0 && formFlow[prevIndex].condition && !formFlow[prevIndex].condition(formData)) { prevIndex--; } return prevIndex; };
+            
+            const handleNext = () => {
+                const currentQuestion = formFlow[currentIndex];
+                let isStepValid = true; let stepError = '';
+                if (currentQuestion.validate && !currentQuestion.validate(formData[currentQuestion.id])) { isStepValid = false; stepError = currentQuestion.errorMessage; }
+                if (isStepValid && currentQuestion.required) {
+                    if (currentQuestion.id === 'name') { if (!formData.firstName || !formData.lastName) { isStepValid = false; stepError = 'First and last name are required.'; }} 
+                    else if (currentQuestion.id === 'contact') { if (!formData.phone || !formData.email) { isStepValid = false; stepError = 'Phone and Email are required.'; }}
+                    else if (currentQuestion.id === 'agreements') { if (!formData.agreements || !formData.agreements.includes('calls')) { isStepValid = false; stepError = 'You must agree to receive phone calls to continue.';}}
+                    else if (currentQuestion.id === 'address') { if (!formData.street || !formData.city) { isStepValid = false; stepError = 'Street and City are required.'; }} 
+                    else { const value = formData[currentQuestion.id]; if (!value || (Array.isArray(value) && value.length === 0)) { isStepValid = false; stepError = 'This field is required.'; }}
+                }
+                if (!isStepValid) { setError(stepError); return; }
+                setError('');
+                if (currentQuestion.id === 'finalWelcome' || currentQuestion.id === 'proxyExit' || currentQuestion.id === 'nrtNonDailySmoker') { setAppState('ENDING'); return; }
+                const nextIndex = findNextIndex(currentIndex);
+                if (nextIndex >= formFlow.length) { setAppState('ENDING'); } else { setCurrentIndex(nextIndex); }
+            };
+
+            const handleBack = () => { setError(''); setCurrentIndex(findPrevIndex(currentIndex)); };
+            
+            const renderContent = () => {
+                if (appState === 'RESOURCES') { return <ResourceScreen formData={formData} />; }
+                if (appState === 'ENDING') { return <CongratulationsScreen formData={formData} onNext={() => setAppState('RESOURCES')} />; }
+                const currentQuestion = formFlow[currentIndex];
+                if (!currentQuestion) return null; 
+                const CurrentComponent = componentMap[currentQuestion.component];
+                if (!CurrentComponent) return <p>Error: Component "{currentQuestion.component}" not found.</p>;
+                const props = { ...currentQuestion.props, name: currentQuestion.id, value: formData[currentQuestion.id], formData, handleChange };
+                return ( <div className="form-content"> <CurrentComponent {...props} /> {error && <p className="error-message">{error}</p>} <div className="form-actions"> {currentIndex > 0 && <button onClick={handleBack} className="cta-button secondary">Back</button>} <button onClick={handleNext} className="cta-button">Continue</button> </div> </div> );
+            };
+
+            return (
+                <div className="main-layout">
+                    <div className="form-column">
+                        <div className="form-wrapper">
+                            <div className="form-header">
+                                <img src="https://131650.fs1.hubspotusercontent-na2.net/hub/131650/hubfs/kic%20logo2.png?width=118&height=40&name=kic%20logo2.png" alt="Kick It California Logo" className="logo" onClick={handleRestart} />
+                                <button className="theme-toggle-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Dark' : 'Light'} Mode</button>
+                            </div>
+                            {renderContent()}
+                        </div>
+                        <TextProgramPromo />
+                    </div>
+                    <aside className="ad-column">
+                        <SkyscraperAd />
+                    </aside>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
