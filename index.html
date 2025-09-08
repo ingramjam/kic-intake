@@ -10,7 +10,8 @@
     <style>
         :root {
             --color-primary-light: #002039; --color-secondary-light: #FF9500;
-            --color-text-light: #1c1c1e; --color-bg-light: #f2f2f7; --color-card-bg-light: #ffffff;
+            --color-text-light: #1c1c1e; --color-bg-light: linear-gradient(to top, #1a2842 50%, #2d4775 100%);
+            --color-card-bg-light: #ffffff;
             --color-primary-dark: #0A84FF; --color-secondary-dark: #FF9F0A;
             --color-text-dark: #E5E5EA; --color-bg-dark: #0d1b2a; --color-card-bg-dark: #1b263b;
             --primary-color: var(--color-primary-light); --secondary-color: var(--color-secondary-light);
@@ -35,8 +36,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes checkmark-in { 0% { transform: scale(0); } 100% { transform: scale(1); } }
         
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: var(--text-color); background-color: var(--bg-color); }
-        .main-layout { display: flex; justify-content: center; align-items: flex-start; gap: 2rem; padding: 2rem 1rem; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .main-layout { display: flex; justify-content: center; align-items: flex-start; gap: 2rem; padding: 2rem 1rem; min-height: 100vh; box-sizing: border-box;}
         .form-column { flex-grow: 1; max-width: 700px; }
         @media (max-width: 992px) { .form-column { max-width: 100%; } .main-layout { padding: 1rem; } }
         .form-wrapper { background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); overflow: hidden; }
@@ -49,6 +50,7 @@
         .landing-card { border: 1px solid var(--input-border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
         .landing-card h3 { font-size: 1.5rem; margin-top: 0; margin-bottom: 0.5rem; color: var(--primary-color); }
         .form-title { font-size: 1.8rem; font-weight: 700; margin: 0 0 1.5rem; color: var(--primary-color); text-align: center; }
+        @media (max-width: 600px) { .form-title { font-size: 1.5rem; } }
         .form-subtitle { font-size: 1.1rem; color: var(--text-color); text-align: center; max-width: 500px; margin: 0 auto 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         .form-group > label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
@@ -269,31 +271,31 @@
             const [step, setStep] = useState(0);
             
             const formFlow = [
-                { id: 'isForSelf', Component: RadioGroup, props: { title: 'Are you here for yourself or to support someone else?', options: [{value: 'true', label: 'I’m here for myself.', helpCopy: 'Click here if you need help quitting.'}, {value: 'false', label: 'I’m here for someone else.', helpCopy: 'Click here if you want resources for a friend or family member.'}]} },
-                { id: 'quitTypes', condition: d => d.isForSelf === 'true', Component: CheckboxGroup, props: { title: 'What are we helping you with today? (Select all that apply.)', options: [{value: 'Quit Smoking', label: 'Quit Smoking'}, {value: 'Quit Vaping', label: 'Quit Vaping'}, {value: 'Quit Smokeless', label: 'Quit Smokeless'}]} },
-                { id: 'proxyQuitTypes', condition: d => d.isForSelf === 'false', Component: CheckboxGroup, props: { title: 'What do you want to help someone with today? (Select all that apply.)', options: [{value: 'Quit Smoking', label: 'Quit Smoking'}, {value: 'Quit Vaping', label: 'Quit Vaping'}, {value: 'Quit Smokeless', label: 'Quit Smokeless'}]} },
-                { id: 'usedMarijuana', condition: d => d.isForSelf === 'true', Component: RadioGroup, props: { title: 'Have you used marijuana in any form in the last 30 days?', options: ['Yes', 'No', 'Don’t know', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
+                { id: 'isForSelf', Component: RadioGroup, props: { title: 'Who is this journey for?', options: [{value: 'true', label: 'I’m here for myself.', helpCopy: 'Click here if you need help quitting.'}, {value: 'false', label: 'I’m here for someone else.', helpCopy: 'Click here if you want resources for a friend or family member.'}]} },
+                { id: 'quitTypes', condition: d => d.isForSelf === 'true', Component: CheckboxGroup, props: { title: 'What would you like help with?', options: [{value: 'Quit Smoking', label: 'Quit Smoking'}, {value: 'Quit Vaping', label: 'Quit Vaping'}, {value: 'Quit Smokeless', label: 'Quit Smokeless'}]} },
+                { id: 'proxyQuitTypes', condition: d => d.isForSelf === 'false', Component: CheckboxGroup, props: { title: 'What are you helping them with?', options: [{value: 'Quit Smoking', label: 'Quit Smoking'}, {value: 'Quit Vaping', label: 'Quit Vaping'}, {value: 'Quit Smokeless', label: 'Quit Smokeless'}]} },
+                { id: 'usedMarijuana', condition: d => d.isForSelf === 'true', Component: RadioGroup, props: { title: 'Used any marijuana in the last 30 days?', options: ['Yes', 'No', 'Don’t know', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
                 { id: 'daysUsedMarijuana', condition: d => d.usedMarijuana === 'Yes', component: 'custom', render: () => (
                     <div className="form-group">
-                        <h2 className="form-title">In the past 30 days, how many days did you use marijuana in any form?</h2>
+                        <h2 className="form-title">In the last 30 days, how often?</h2>
                         <input type="number" name="daysUsedMarijuana" value={formData.daysUsedMarijuana || ''} onChange={handleChange} className="form-input" min="1" max="30" placeholder="1-30"/>
                         {['Don’t know', 'Prefer not to answer'].map(opt => ( <label key={opt} className={`checklist-item ${formData.daysUsedMarijuana === opt ? 'selected' : ''}`}> <input type="radio" name="daysUsedMarijuana" value={opt} checked={formData.daysUsedMarijuana === opt} onChange={handleChange} /> <span className="item-label">{opt}</span><span className="checkmark-icon"></span> </label> ))}
                     </div>
                 )},
                 { id: 'age', component: 'custom', render: () => (
                     <div className="form-group">
-                        <h2 className="form-title">How old are you?</h2>
+                        <h2 className="form-title">What's your age?</h2>
                         <input type="number" id="age" name="age" value={formData.age || ''} onChange={handleChange} className="form-input" />
                         <span className="help-copy" style={{textAlign: 'center', marginTop: '1rem'}}>Kick It California provides coaching services to people 13 years and older.</span>
                         {formData.age && formData.age < 13 && <p className="error-message">Kick It California has coaching services for people 13 years and older, but please feel free to check out these <a href="https://kickitca.org/quit-all-kit">self-help materials.</a></p>}
                     </div>
                 )},
-                { id: 'householdInfo', Component: CheckboxGroup, props: { title: 'We have specific resources for people who are pregnant and households with children 5 years old or younger. Do any of these apply to you?', options: [ { value: 'child_5_or_younger', label: 'There’s a child 5 years old or younger living in my home.' }, { value: 'pregnant_self', label: 'I’m currently pregnant.' }, { value: 'pregnant_other', label: 'Someone else in my home is pregnant.' }, { value: 'none', label: 'None' } ]} },
-                { id: 'mediCal', Component: RadioGroup, props: { title: 'Do you have Medi-Cal?', helpCopy: 'This helps us to get to know you. If you don’t want to share, that’s okay too.', options: ['Yes', 'No', 'Don’t know', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
-                { id: 'identity', Component: RadioGroup, props: { title: 'How do you identify yourself?', helpCopy: 'This helps us to get to know you. If you don’t want to share, that’s okay too.', options: ['Male', 'Female', 'In another way', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
-                { id: 'sexualOrientation', Component: RadioGroup, props: { title: 'What is your sexual orientation?', helpCopy: 'This helps us to get to know you. If you don’t want to share, that’s okay too.', options: ['Heterosexual (straight)', 'Gay/Lesbian', 'Bisexual', 'Other', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
-                { id: 'ethnicity', Component: CheckboxGroup, props: { title: 'What is your race or ethnicity? (Select all that apply)', helpCopy: 'This helps us to get to know you. If you don’t want to share, that’s okay too.', options: ['Alaska Native', 'American Indian', 'Asian', 'Black or African American', 'Hispanic/Latino', 'Pacific Islander', 'White', 'Other', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
-                { id: 'researchContact', Component: RadioGroup, props: { title: 'We sometimes contact people as part of a research project or just to see how they are doing. Those selected will receive a $10 gift card for participating. Would it be okay to contact you?', options: ['Yes', 'No'].map(v => ({value: v, label: v}))} }
+                { id: 'householdInfo', Component: CheckboxGroup, props: { title: 'Do any of these apply to your household?', options: [ { value: 'child_5_or_younger', label: 'A child 5 or younger lives here.' }, { value: 'pregnant_self', label: 'I’m currently pregnant.' }, { value: 'pregnant_other', label: 'Someone else in my home is pregnant.' }, { value: 'none', label: 'None of the above' } ]} },
+                { id: 'mediCal', Component: RadioGroup, props: { title: 'Do you have Medi-Cal?', helpCopy: 'This helps us get to know you better.', options: ['Yes', 'No', 'Don’t know', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
+                { id: 'identity', Component: RadioGroup, props: { title: 'How do you identify?', helpCopy: 'This helps us get to know you better.', options: ['Male', 'Female', 'In another way', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
+                { id: 'sexualOrientation', Component: RadioGroup, props: { title: 'What\'s your sexual orientation?', helpCopy: 'This helps us get to know you better.', options: ['Heterosexual (straight)', 'Gay/Lesbian', 'Bisexual', 'Other', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
+                { id: 'ethnicity', Component: CheckboxGroup, props: { title: 'What\'s your race or ethnicity?', helpCopy: 'Select all that apply.', options: ['Alaska Native', 'American Indian', 'Asian', 'Black or African American', 'Hispanic/Latino', 'Pacific Islander', 'White', 'Other', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
+                { id: 'researchContact', Component: RadioGroup, props: { title: 'Okay to contact you for paid research?', helpCopy: 'Participants receive a $10 gift card.', options: ['Yes', 'No'].map(v => ({value: v, label: v}))} }
             ];
 
             const visibleFlow = formFlow.filter(s => s.condition ? s.condition(formData) : true);
