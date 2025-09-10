@@ -43,7 +43,10 @@
         .form-wrapper { background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); overflow: hidden; }
         .form-header { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background-color: #002039; }
         .form-header .logo { max-height: 30px; cursor: pointer; }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
         .form-header .theme-toggle-button { background-color: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+        .demo-toggle { display: flex; align-items: center; gap: 8px; color: white; font-size: 0.8rem; font-weight: 600; cursor: pointer; background-color: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
+        .demo-toggle input { cursor: pointer; }
         .form-content { padding: 2.5rem; min-height: 450px; display: flex; flex-direction: column; justify-content: center; }
         .question-content { animation: fadeIn 0.5s ease-out; }
         .landing-content { padding: 2.5rem; text-align: center; }
@@ -105,6 +108,7 @@
             const [apiData, setApiData] = useState({});
             const [isLoading, setIsLoading] = useState(false);
             const [apiError, setApiError] = useState('');
+            const [isDemoMode, setIsDemoMode] = useState(true); // Demo mode is ON by default
 
             useEffect(() => { document.documentElement.className = theme; }, [theme]);
             
@@ -165,11 +169,17 @@
             const handleContinueToStep2 = async () => {
                 if (!validateStep1()) return;
 
+                if (isDemoMode) {
+                    console.log("DEMO MODE: Bypassing API call for Step 1.");
+                    setApiData({ cxId: 'demo-cxId-12345', authToken: 'demo-auth-token-67890' });
+                    setAppState('FORM_STEP_2');
+                    return;
+                }
+
                 setIsLoading(true);
                 setApiError('');
 
                 try {
-                    // Get user IP
                     const ipResponse = await fetch('https://api.ipify.org?format=json');
                     const ipData = await ipResponse.json();
                     const userIP = ipData.ip;
@@ -183,8 +193,8 @@
                         userIP: userIP,
                         phoneCallConsent: !!formData.agreements_calls,
                         smsConsent: !!formData.agreements_sms,
-                        languageId: 1, // English
-                        srcCode: "123" // Optional
+                        languageId: 1, 
+                        srcCode: "123"
                     };
                     
                     const proxyUrl = 'https://corsproxy.io/?';
@@ -216,13 +226,17 @@
             };
 
             const handleSubmit = async () => {
+                 if (isDemoMode) {
+                    console.log("DEMO MODE: Bypassing final API submission.");
+                    setAppState('ENDING');
+                    return;
+                }
+
                 setIsLoading(true);
                 setApiError('');
 
-                // Helper for transforming form data to API format
                 const transformDataForApi = (data) => {
                     const payload = { cxId: apiData.cxId };
-                    
                     const mappings = {
                         isForSelf: { key: 'seekingHelpFor', map: { 'true': 24, 'false': 25 } },
                         helpWithCategory: { key: 'helpWithCategory', map: { 'Tobacco/Nicotine': 4394, 'Marijuana': 4395 } },
@@ -294,7 +308,13 @@
                         <div className="form-wrapper">
                             <div className="form-header">
                                 <img src="https://131650.fs1.hubspotusercontent-na2.net/hub/131650/hubfs/kic%20logo2.png?width=118&height=40&name=kic%20logo2.png" alt="Kick It California Logo" className="logo" onClick={handleRestart} />
-                                <button className="theme-toggle-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Dark' : 'Light'} Mode</button>
+                                <div className="header-controls">
+                                    <label className="demo-toggle">
+                                        <input type="checkbox" checked={isDemoMode} onChange={() => setIsDemoMode(p => !p)} />
+                                        Demo Mode
+                                    </label>
+                                    <button className="theme-toggle-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Dark' : 'Light'} Mode</button>
+                                </div>
                             </div>
                             { apiError && <p className="error-message" style={{margin: '1rem'}}>{apiError}</p> }
                             { appState === 'LANDING' && <LandingPage onStartForm={() => setAppState('FORM_STEP_1')} /> }
