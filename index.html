@@ -12,8 +12,9 @@
             --color-primary-light: #002039; --color-secondary-light: #FF9500;
             --color-text-light: #1c1c1e; --color-bg-light: linear-gradient(to top, #1a2842 50%, #2d4775 100%);
             --color-card-bg-light: #ffffff;
-            --color-primary-dark: #0A84FF; --color-secondary-dark: #FF9F0A;
-            --color-text-dark: #E5E5EA; --color-bg-dark: #0d1b2a; --color-card-bg-dark: #1b263b;
+            --color-primary-dark: #58A6FF; --color-secondary-dark: #FF9F0A;
+            --color-text-dark: #E5E5EA; --color-bg-dark: linear-gradient(to top, #1a2842 50%, #2d4775 100%);
+            --color-card-bg-dark: #1b263b;
             --primary-color: var(--color-primary-light); --secondary-color: var(--color-secondary-light);
             --text-color: var(--color-text-light); --bg-color: var(--color-bg-light); --card-bg-color: var(--color-card-bg-light);
             --link-color: var(--color-primary-light);
@@ -41,20 +42,26 @@
         .form-column { flex-grow: 1; max-width: 700px; }
         @media (max-width: 992px) { .form-column { max-width: 100%; } .main-layout { padding: 1rem; } }
         .form-wrapper { background-color: var(--card-bg-color); border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); overflow: hidden; }
-        .form-header { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background-color: #002039; }
+        .form-header { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background-color: #002039; flex-wrap: wrap; gap: 10px; }
         .form-header .logo { max-height: 30px; cursor: pointer; }
-        .header-controls { display: flex; align-items: center; gap: 15px; }
-        .form-header .theme-toggle-button { background-color: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
-        .demo-toggle { display: flex; align-items: center; gap: 8px; color: white; font-size: 0.8rem; font-weight: 600; cursor: pointer; background-color: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
-        .demo-toggle input { cursor: pointer; }
+        .header-controls { display: flex; align-items: center; gap: 10px; color: white; font-size: 0.8rem; }
+        .header-controls label { display: flex; align-items: center; gap: 5px; cursor: pointer;}
+        .header-controls .theme-toggle-button { background-color: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
         .form-content { padding: 2.5rem; min-height: 450px; display: flex; flex-direction: column; justify-content: center; }
         .question-content { animation: fadeIn 0.5s ease-out; }
         .landing-content { padding: 2.5rem; text-align: center; }
-        .landing-card { border: 1px solid var(--input-border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        .landing-card { border: 1px solid var(--input-border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; position: relative; overflow: hidden;}
+        .landing-card.video-card { padding-top: 3rem; padding-bottom: 3rem; }
         .landing-card h3 { font-size: 1.5rem; margin-top: 0; margin-bottom: 0.5rem; color: var(--primary-color); }
+        .video-card-background { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: cover; transform: translate(-50%, -50%); z-index: 1;}
+        .video-card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 32, 57, 0.7); z-index: 2;}
+        .video-card-content { position: relative; z-index: 3; }
+        .video-card-content h3, .video-card-content p { color: white; }
         .form-title { font-size: 1.8rem; font-weight: 700; margin: 0 0 1.5rem; color: var(--primary-color); text-align: center; }
         @media (max-width: 600px) { .form-title { font-size: 1.5rem; } }
         .form-subtitle { font-size: 1.1rem; color: var(--text-color); text-align: center; max-width: 500px; margin: 0 auto 2rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; gap: 0; } }
         .form-group { margin-bottom: 1.5rem; }
         .form-group > label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
         .form-input { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--input-border-color); border-radius: 8px; background-color: var(--input-bg-color); color: var(--input-text-color); font-size: 1rem; box-sizing: border-box; }
@@ -66,14 +73,11 @@
         .cta-button:hover { transform: translateY(-3px); box-shadow: 0 7px 20px rgba(0,0,0,0.15); }
         .cta-button:disabled { background-color: #cccccc; cursor: not-allowed; transform: none; box-shadow: none; }
         .cta-button.secondary { background-color: var(--bg-color); color: var(--text-color) !important; border: 1px solid var(--input-border-color); }
+        .cta-button.smoke { background-color: #F5CBA7; color: #002039 !important; }
+        .cta-button.vape { background-color: #E6D0DE; color: #002039 !important; }
         @media (max-width: 600px) {
-            .landing-card .form-actions {
-                flex-direction: column;
-            }
-            .landing-card .cta-button {
-                width: 100%;
-                box-sizing: border-box;
-            }
+            .landing-card .form-actions { flex-direction: column; }
+            .landing-card .cta-button { width: 100%; box-sizing: border-box; }
         }
         .checklist-item { position: relative; display: flex; align-items: center; padding: 1rem; margin-bottom: 0.75rem; border-radius: 8px; border: 1px solid var(--input-border-color); cursor: pointer; transition: all 0.2s ease; }
         .checklist-item:hover { background-color: var(--checklist-item-bg-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -85,8 +89,13 @@
         .checkmark-icon::after { content: ''; width: 6px; height: 12px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg) translateY(-1px); }
         input:checked ~ .checkmark-icon { transform: translateY(-50%) scale(1); animation: checkmark-in 0.3s; }
         .form-disclaimer { font-size: 0.8rem; text-align: center; margin-top: 1.5rem; color: #6c757d; }
-        .ending-screen, .resource-section { text-align: center; padding: 2.5rem; animation: fadeIn 0.5s ease-out; }
-        .ending-screen h2 { color: var(--primary-color); font-size: 1.8rem; }
+        .ending-screen { text-align: center; padding: 2.5rem; animation: fadeIn 0.5s ease-out; }
+        .ending-screen .success-icon { width: 60px; height: 60px; background-color: #28a745; border-radius: 50%; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
+        .ending-screen .success-icon::after { content: ''; width: 15px; height: 30px; border: solid white; border-width: 0 5px 5px 0; transform: rotate(45deg); }
+        .ending-screen h2 { color: var(--primary-color); font-size: 1.6rem; margin-bottom: 0.5rem; }
+        .ending-screen p { margin-bottom: 2rem; }
+        .ending-screen .next-steps-title { font-weight: bold; margin-top: 2rem; margin-bottom: 1rem; color: var(--text-color); }
+        .resource-section { text-align: center; }
         .resource-section .resource-link { display: block; background-color: var(--bg-color); border: 1px solid var(--input-border-color); padding: 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; color: var(--link-color); margin-top: 1rem; transition: all 0.2s ease; }
         .resource-section .resource-link:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
         .legal-copy { font-size: 0.75rem; color: #6c757d; margin-top: 2rem; text-align: left; }
@@ -108,46 +117,31 @@
             const [apiData, setApiData] = useState({});
             const [isLoading, setIsLoading] = useState(false);
             const [apiError, setApiError] = useState('');
-            const [isDemoMode, setIsDemoMode] = useState(true); // Demo mode is ON by default
+            const [isDemoMode, setIsDemoMode] = useState(true);
 
             useEffect(() => { document.documentElement.className = theme; }, [theme]);
             
-            // Exit confirmation
             useEffect(() => {
                 const handleBeforeUnload = (e) => {
-                    if (appState.startsWith('FORM_')) {
-                        e.preventDefault();
-                        e.returnValue = '';
-                    }
+                    if (appState.startsWith('FORM_')) { e.preventDefault(); e.returnValue = ''; }
                 };
                 window.addEventListener('beforeunload', handleBeforeUnload);
                 return () => window.removeEventListener('beforeunload', handleBeforeUnload);
             }, [appState]);
             
             const handleRestart = () => {
-                setAppState('LANDING');
-                setFormData({});
-                setErrors({});
-                setApiData({});
-                setApiError('');
+                setAppState('LANDING'); setFormData({}); setErrors({}); setApiData({}); setApiError('');
             };
             
             const handleChange = (e) => {
                 const { name, value, type, checked } = e.target;
-                setApiError(''); // Clear previous errors on new input
+                setApiError(''); 
                 if (type === 'checkbox') {
-                    const currentValues = formData[name] || [];
-                    let newValues;
-                    if (checked) {
-                        if (value === 'none') { newValues = ['none']; } 
-                        else { newValues = [...currentValues.filter(v => v !== 'none'), value]; }
-                    } else {
-                        newValues = currentValues.filter(v => v !== value);
-                    }
+                    const currentValues = formData[name] || []; let newValues;
+                    if (checked) { if (value === 'none') { newValues = ['none']; } else { newValues = [...currentValues.filter(v => v !== 'none'), value]; }} 
+                    else { newValues = currentValues.filter(v => v !== value); }
                     setFormData(prev => ({ ...prev, [name]: newValues }));
-                } else {
-                    setFormData(prev => ({ ...prev, [name]: value }));
-                }
+                } else { setFormData(prev => ({ ...prev, [name]: value })); }
             };
             
             const validateStep1 = () => {
@@ -157,149 +151,43 @@
                 if (!formData.phone || formData.phone.replace(/\D/g, '').length !== 10) newErrors.phone = 'A valid 10-digit Phone Number is required.';
                 if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'A valid Email is required.';
                 const zip = formData.zipCode;
-                if (!zip || zip.length !== 5 || parseInt(zip) < 90001 || parseInt(zip) > 96162) {
-                    newErrors.zipCode = 'Looks like you’re outside of California, please enter a valid CA ZIP Code or call the National Quit Line at 1-800-QUIT-NOW.';
-                }
+                if (!zip || zip.length !== 5 || parseInt(zip) < 90001 || parseInt(zip) > 96162) newErrors.zipCode = 'Looks like you’re outside of California, please enter a valid CA ZIP Code or call the National Quit Line at 1-800-QUIT-NOW.';
                 if (!formData.agreements_calls) newErrors.agreements_calls = 'You must agree to receive phone calls to continue.';
-                
-                setErrors(newErrors);
-                return Object.keys(newErrors).length === 0;
+                setErrors(newErrors); return Object.keys(newErrors).length === 0;
             };
 
-            const handleContinueToStep2 = async () => {
+            const handleSelfIntake = async () => {
                 if (!validateStep1()) return;
+                setIsLoading(true); setApiError('');
 
                 if (isDemoMode) {
-                    console.log("DEMO MODE: Bypassing API call for Step 1.");
-                    setApiData({ cxId: 'demo-cxId-12345', authToken: 'demo-auth-token-67890' });
-                    setAppState('FORM_STEP_2');
+                    console.log("DEMO MODE: Simulating Self-Intake API call with data:", formData);
+                    setTimeout(() => {
+                        setApiData({ cxId: 'demo-cxId-123', authToken: 'demo-authToken-456' });
+                        setAppState('FORM_STEP_2');
+                        setIsLoading(false);
+                    }, 1000);
                     return;
                 }
-
-                setIsLoading(true);
-                setApiError('');
-
-                try {
-                    const ipResponse = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipResponse.json();
-                    const userIP = ipData.ip;
-
-                    const payload = {
-                        zipCode: formData.zipCode,
-                        phoneNumber: formData.phone.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'),
-                        email: formData.email,
-                        firstName: formData.firstName,
-                        lastName: formData.lastName,
-                        userIP: userIP,
-                        phoneCallConsent: !!formData.agreements_calls,
-                        smsConsent: !!formData.agreements_sms,
-                        languageId: 1, 
-                        srcCode: "123"
-                    };
-                    
-                    const proxyUrl = 'https://corsproxy.io/?';
-                    const targetUrl = 'https://test-vision.ucsd.edu/KicIntake/api/contact';
-
-                    const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'kic-access-key': '53c04fe7-2e65-4710-8589-ed863ac82b47'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok && result.successStatus) {
-                        setApiData({ cxId: result.cxId, authToken: result.authorizationToken });
-                        setAppState('FORM_STEP_2');
-                    } else {
-                        throw new Error(result.returnMessage || 'Failed to submit contact information.');
-                    }
-                } catch (error) {
-                    setApiError('Sorry, we’re unable to process your request online. A Quit Coach will call you soon.');
-                    console.error('API Error:', error);
-                } finally {
-                    setIsLoading(false);
-                }
+                
+                setApiError('Live API calls are disabled for this demo. Please use Demo Mode.');
+                setIsLoading(false);
             };
 
-            const handleSubmit = async () => {
-                 if (isDemoMode) {
-                    console.log("DEMO MODE: Bypassing final API submission.");
-                    setAppState('ENDING');
+            const handleFullIntake = async () => {
+                setIsLoading(true); setApiError('');
+
+                if (isDemoMode) {
+                    console.log("DEMO MODE: Simulating Full-Intake API call with data:", { ...formData, ...apiData });
+                    setTimeout(() => {
+                        setAppState('FINAL');
+                        setIsLoading(false);
+                    }, 1000);
                     return;
                 }
-
-                setIsLoading(true);
-                setApiError('');
-
-                const transformDataForApi = (data) => {
-                    const payload = { cxId: apiData.cxId };
-                    const mappings = {
-                        isForSelf: { key: 'seekingHelpFor', map: { 'true': 24, 'false': 25 } },
-                        helpWithCategory: { key: 'helpWithCategory', map: { 'Tobacco/Nicotine': 4394, 'Marijuana': 4395 } },
-                        quitTypes: { key: 'needHelpWith', map: { 'Smoking': 9, 'Vaping': 10, 'Smokeless': 11 } },
-                        proxyQuitTypes: { key: 'needHelpWith', map: { 'Quit Smoking': 9, 'Quit Vaping': 10, 'Quit Smokeless': 11 } },
-                        usedMarijuana: { key: 'marijuana', map: { 'Yes': 2, 'No': 3, 'Don’t know': 99991, 'Prefer not to answer': 2070 } },
-                        marijuanaDaysUsed: { key: 'marijuanaDaysUsed', map: { 'Don’t know': 99991, 'Prefer not to answer': 2070 } },
-                        marijuanaUsed: { key: 'marijuanaUsed', map: {'Smoked': 4261, 'Vaped': 4262, 'Dabbed': 4263, 'Ate': 4264, 'Drank': 4265, 'Other': 99996, 'Don’t know': 99991, 'Prefer not to answer': 2070}},
-                        marijuanaPlanQuit: { key: 'marijuanaPlanQuit', map: { 'Quit': 4396, 'Reduce': 4397 } },
-                        householdInfo: { key: 'first5', map: {'A child 5 or younger lives here.': 2055, 'I’m currently pregnant.': 2056, 'Someone else in my home is pregnant.': 2057, 'None of the above': 99998} },
-                        mediCal: { key: 'mediCal', map: { 'Yes': 2, 'No': 3, 'Don’t know': 99991, 'Prefer not to answer': 2070 } },
-                        identity: { key: 'gender', map: { 'Male': 1, 'Female': 2, 'In another way': 3008, 'Prefer not to answer': 2070 } },
-                        sexualOrientation: { key: 'sexOrientation', map: { 'Heterosexual (straight)': 129, 'Gay/Lesbian': 130, 'Bisexual': 131, 'Other': 99996, 'Prefer not to answer': 2070 } },
-                        ethnicity: { key: 'races', map: {'Alaska Native': 8, 'American Indian': 9, 'Asian': 10, 'Black or African American': 2, 'Hispanic/Latino': 3, 'Pacific Islander': 11, 'White': 1, 'Other': 99996, 'Prefer not to answer': 2070}},
-                        researchContact: { key: 'futureContact', map: { 'Yes': 2, 'No': 3 } }
-                    };
-
-                    for (const formKey in data) {
-                        const config = mappings[formKey];
-                        if (config) {
-                            const formValue = data[formKey];
-                            if (Array.isArray(formValue)) {
-                                payload[config.key] = formValue.map(v => config.map[v]).join('|');
-                            } else {
-                                payload[config.key] = config.map[formValue] !== undefined ? config.map[formValue] : formValue;
-                            }
-                        } else if (['age', 'marijuanaOther', 'genderOther', 'sexOrientationOther', 'raceOther'].includes(formKey)) {
-                           payload[formKey] = data[formKey];
-                        }
-                    }
-                    return payload;
-                };
-
-                const finalPayload = transformDataForApi(formData);
                 
-                try {
-                    const proxyUrl = 'https://corsproxy.io/?';
-                    const targetUrl = 'https://test-vision.ucsd.edu/KicIntake/api/Intake';
-
-                    const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'kic-access-key': '53c04fe7-2e65-4710-8589-ed863ac82b47',
-                            'kic-auth-token': apiData.authToken
-                        },
-                        body: JSON.stringify(finalPayload)
-                    });
-
-                    const result = await response.json();
-                    
-                    if (response.ok && result.successStatus) {
-                        setAppState('ENDING');
-                    } else {
-                        throw new Error(result.returnMessage || 'Failed to submit intake form.');
-                    }
-
-                } catch (error) {
-                    setApiError('Sorry, we’re unable to process your request online. A Quit Coach will call you soon.');
-                    console.error('API Error:', error);
-                } finally {
-                    setIsLoading(false);
-                }
+                setApiError('Live API calls are disabled for this demo. Please use Demo Mode.');
+                setIsLoading(false);
             };
             
             return (
@@ -309,8 +197,8 @@
                             <div className="form-header">
                                 <img src="https://131650.fs1.hubspotusercontent-na2.net/hub/131650/hubfs/kic%20logo2.png?width=118&height=40&name=kic%20logo2.png" alt="Kick It California Logo" className="logo" onClick={handleRestart} />
                                 <div className="header-controls">
-                                    <label className="demo-toggle">
-                                        <input type="checkbox" checked={isDemoMode} onChange={() => setIsDemoMode(p => !p)} />
+                                    <label>
+                                        <input type="checkbox" checked={isDemoMode} onChange={() => setIsDemoMode(!isDemoMode)} />
                                         Demo Mode
                                     </label>
                                     <button className="theme-toggle-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Dark' : 'Light'} Mode</button>
@@ -318,72 +206,57 @@
                             </div>
                             { apiError && <p className="error-message" style={{margin: '1rem'}}>{apiError}</p> }
                             { appState === 'LANDING' && <LandingPage onStartForm={() => setAppState('FORM_STEP_1')} /> }
-                            { appState === 'FORM_STEP_1' && <FormStep1 formData={formData} handleChange={handleChange} errors={errors} onNext={handleContinueToStep2} isLoading={isLoading} /> }
-                            { appState === 'FORM_STEP_2' && <FormStep2 formData={formData} handleChange={handleChange} errors={errors} onSubmit={handleSubmit} isLoading={isLoading} /> }
-                            { appState === 'ENDING' && <CongratulationsScreen onViewResources={() => setAppState('RESOURCES')} /> }
-                            { appState === 'RESOURCES' && <ResourceScreen /> }
+                            { appState === 'FORM_STEP_1' && <FormStep1 formData={formData} handleChange={handleChange} errors={errors} onNext={handleSelfIntake} isLoading={isLoading} /> }
+                            { appState === 'FORM_STEP_2' && <FormStep2 formData={formData} handleChange={handleChange} onSubmit={handleFullIntake} isLoading={isLoading} /> }
+                            { appState === 'FINAL' && <FinalScreen handleRestart={handleRestart} /> }
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const LandingPage = ({ onStartForm }) => (
-            <div className="landing-content">
-                <h2 className="form-title">Choose your approach and start quitting today.</h2>
+        const LandingPage = ({ onStartForm }) => ( 
+            <div className="landing-content"> 
+                <h2 className="form-title">Choose your approach and start quitting today.</h2> 
                 <p className="form-subtitle">Kick It California offers a range of services, from one-on-one Quit Coaching to text programs and self-help materials. Choose the option you prefer below.</p>
-                <div className="landing-card"><h3>Talk to a Quit Coach.</h3><p>Sign up below to schedule your call. We'll help you create a personalized Quit Plan to double your chances of quitting for good.</p><button onClick={onStartForm} className="cta-button">Sign Up</button></div>
-                <div className="landing-card"><h3>Join our Text Program.</h3><p>Set your quit date and start receiving messages at critical times in your quit journey. Text us questions and a Quit Coach will respond.</p><div className="form-actions"><a href="sms:66819?&body=Quit%20Smoking" className="cta-button">“Quit Smoking” to 66819</a><a href="sms:66819?&body=Quit%20Vaping" className="cta-button">“Quit Vaping” to 66819</a></div></div>
+                <div className="landing-card video-card">
+                    <video className="video-card-background" autoPlay loop muted playsInline src="https://131650.fs1.hubspotusercontent-na2.net/hubfs/131650/phone3.mp4"></video>
+                    <div className="video-card-overlay"></div>
+                    <div className="video-card-content">
+                        <h3>Talk to a Quit Coach.</h3>
+                        <p>Sign up below to schedule your call. We'll help you create a personalized Quit Plan to double your chances of quitting for good.</p>
+                        <button onClick={onStartForm} className="cta-button">Sign Up</button>
+                    </div>
+                </div>
+                <div className="landing-card">
+                    <h3>Join our Text Program.</h3>
+                    <p>Set your quit date and start receiving messages at critical times in your quit journey. Text us questions and a Quit Coach will respond.</p>
+                    <div className="form-actions">
+                        <a href="sms:66819?&body=Quit%20Smoking" className="cta-button smoke">“Quit Smoking” to 66819</a>
+                        <a href="sms:66819?&body=Quit%20Vaping" className="cta-button vape">“Quit Vaping” to 66819</a>
+                    </div>
+                </div>
                 <p>For additional support, <a href="https://kickitca.org/self-help-materials" target="_blank">explore our self-help materials</a>.</p>
                 <p className="legal-copy">*See Text Program terms below.<br/><br/>Sign up to receive free quit messages from Kick It California’s text program. Available in English, Spanish, Chinese, Korean, Vietnamese. You must be 13 years or older to enroll. Message and data rates may apply. Message frequency varies. Text STOP at any time to opt out. Call 800-300-8086 for help.</p>
-            </div>
+            </div> 
         );
-
-        const FormStep1 = ({ formData, handleChange, errors, onNext, isLoading }) => {
-            const handlePhoneChange = (e) => { const val = e.target.value.replace(/\D/g, '').substring(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3'); handleChange({ target: { name: 'phone', value: val } }); };
-            return (
-                <div className="form-content">
-                    <h2 className="form-title">Contact Information</h2>
-                    <div className="form-group"><label htmlFor="firstName">First Name*</label><input type="text" id="firstName" name="firstName" value={formData.firstName || ''} onChange={handleChange} className="form-input" maxLength="50" />{errors.firstName && <p className="error-message">{errors.firstName}</p>}</div>
-                    <div className="form-group"><label htmlFor="lastName">Last Name*</label><input type="text" id="lastName" name="lastName" value={formData.lastName || ''} onChange={handleChange} className="form-input" maxLength="50"/>{errors.lastName && <p className="error-message">{errors.lastName}</p>}</div>
-                    <div className="form-group"><label htmlFor="phone">Phone Number*</label><input type="tel" id="phone" name="phone" value={formData.phone || ''} onChange={handlePhoneChange} className="form-input" placeholder="(XXX) XXX-XXXX"/>{errors.phone && <p className="error-message">{errors.phone}</p>}</div>
-                    <div className="form-group"><label htmlFor="email">Email*</label><input type="email" id="email" name="email" value={formData.email || ''} onChange={handleChange} className="form-input" /><span className="help-copy">We will email you resources. You can opt out at any time.</span>{errors.email && <p className="error-message">{errors.email}</p>}</div>
-                    <div className="form-group"><label htmlFor="zipCode">California ZIP Code*</label><input type="text" id="zipCode" name="zipCode" value={formData.zipCode || ''} onChange={handleChange} className="form-input" maxLength="5"/><span className="help-copy">We provide Quit Coach services to people living in California.</span>{errors.zipCode && <p className="error-message">{errors.zipCode} <a href="https://kickitca.org/quit-all-kit" target="_blank">View self-help materials.</a></p>}</div>
-                    <div className="form-group">
-                        <label className={`checklist-item ${formData.agreements_calls ? 'selected' : ''}`}><input type="checkbox" name="agreements_calls" checked={!!formData.agreements_calls} onChange={handleChange} /><span className="item-label">I agree to receive phone calls. I’m at least 13 years old. I live in California.*</span><span className="checkmark-icon"></span></label>
-                        {errors.agreements_calls && <p className="error-message" style={{marginTop:0}}>{errors.agreements_calls}</p>}
-                        <label className={`checklist-item ${formData.agreements_sms ? 'selected' : ''}`}><input type="checkbox" name="agreements_sms" checked={!!formData.agreements_sms} onChange={handleChange} /><span className="item-label">I agree to receive SMS messages. Standard text messaging rates apply.</span><span className="checkmark-icon"></span></label>
-                    </div>
-                    <div className="form-actions"><button onClick={onNext} className="cta-button" disabled={isLoading}>{isLoading ? 'Continuing...' : 'Continue'}</button></div>
-                    <p className="form-disclaimer">By clicking continue, I acknowledge that my information will be kept confidential as allowed by law. You can read our detailed privacy policies <a href="https://www.kickitca.org/privacy" target="_blank">here</a>.</p>
-                </div>
-            );
-        };
-        
+        const FormStep1 = ({ formData, handleChange, errors, onNext, isLoading }) => { const handlePhoneChange = (e) => { const val = e.target.value.replace(/\D/g, '').substring(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3'); handleChange({ target: { name: 'phone', value: val } }); }; return ( <div className="form-content"> <h2 className="form-title">Contact Information</h2> <div className="form-grid"> <div className="form-group"><label htmlFor="firstName">First Name*</label><input type="text" id="firstName" name="firstName" value={formData.firstName || ''} onChange={handleChange} className="form-input" maxLength="50" />{errors.firstName && <p className="error-message">{errors.firstName}</p>}</div><div className="form-group"><label htmlFor="lastName">Last Name*</label><input type="text" id="lastName" name="lastName" value={formData.lastName || ''} onChange={handleChange} className="form-input" maxLength="50"/>{errors.lastName && <p className="error-message">{errors.lastName}</p>}</div></div> <div className="form-group"><label htmlFor="phone">Phone Number*</label><input type="tel" id="phone" name="phone" value={formData.phone || ''} onChange={handlePhoneChange} className="form-input" placeholder="(XXX) XXX-XXXX"/>{errors.phone && <p className="error-message">{errors.phone}</p>}</div><div className="form-group"><label htmlFor="email">Email*</label><input type="email" id="email" name="email" value={formData.email || ''} onChange={handleChange} className="form-input" /><span className="help-copy">We will email you resources. You can opt out at any time.</span>{errors.email && <p className="error-message">{errors.email}</p>}</div><div className="form-group"><label htmlFor="zipCode">California ZIP Code*</label><input type="text" id="zipCode" name="zipCode" value={formData.zipCode || ''} onChange={handleChange} className="form-input" maxLength="5"/><span className="help-copy">We need your ZIP code to confirm you're eligible for our free California-based services.</span>{errors.zipCode && <p className="error-message">{errors.zipCode} <a href="https://kickitca.org/quit-all-kit" target="_blank">View self-help materials.</a></p>}</div><div className="form-group"><label className={`checklist-item ${formData.agreements_calls ? 'selected' : ''}`}><input type="checkbox" name="agreements_calls" checked={!!formData.agreements_calls} onChange={handleChange} /><span className="item-label">I agree to receive phone calls. I’m at least 13 years old. I live in California.*</span><span className="checkmark-icon"></span></label>{errors.agreements_calls && <p className="error-message" style={{marginTop:0}}>{errors.agreements_calls}</p>}<label className={`checklist-item ${formData.agreements_sms ? 'selected' : ''}`}><input type="checkbox" name="agreements_sms" checked={!!formData.agreements_sms} onChange={handleChange} /><span className="item-label">I agree to receive SMS messages. Standard text messaging rates apply.</span><span className="checkmark-icon"></span></label></div><div className="form-actions"><button onClick={onNext} className="cta-button" disabled={isLoading}>{isLoading ? 'Continuing...' : 'Continue'}</button></div><p className="form-disclaimer">By clicking continue, I acknowledge that my information will be kept confidential as allowed by law. You can read our detailed privacy policies <a href="https://www.kickitca.org/privacy" target="_blank">here</a>.</p></div> );};
         const ProgressBar = ({ progress }) => (<div className="progress-bar-container"><div className="progress-bar" style={{ width: `${progress}%` }}></div></div>);
         const RadioGroup = ({ name, value, handleChange, title, helpCopy, options }) => (<div className="form-group"><h2 className="form-title">{title}</h2>{helpCopy && <p className="help-copy" style={{textAlign: 'center', margin: '-1rem 0 1rem'}}>{helpCopy}</p>}{options.map(opt => (<label key={opt.value} className={`checklist-item ${value === opt.value ? 'selected' : ''}`}><input type="radio" name={name} value={opt.value} checked={value === opt.value} onChange={handleChange} /><span className="item-label">{opt.label} {opt.helpCopy && <span className="help-copy">{opt.helpCopy}</span>}</span><span className="checkmark-icon"></span></label>))}</div>);
         const CheckboxGroup = ({ name, value, handleChange, title, helpCopy, options }) => (<div className="form-group"><h2 className="form-title">{title}</h2>{helpCopy && <p className="help-copy" style={{textAlign: 'center', margin: '-1rem 0 1rem'}}>{helpCopy}</p>}{options.map(opt => (<label key={opt.value} className={`checklist-item ${(value || []).includes(opt.value) ? 'selected' : ''}`}><input type="checkbox" name={name} value={opt.value} checked={(value || []).includes(opt.value)} onChange={handleChange} /><span className="item-label">{opt.label}</span><span className="checkmark-icon"></span></label>))}</div>);
 
         const FormStep2 = ({ formData, handleChange, isLoading, onSubmit }) => {
             const [step, setStep] = useState(0);
-            
             const formFlow = [
                 { id: 'isForSelf', Component: RadioGroup, props: { title: 'Who is this journey for?', options: [{value: 'true', label: 'I’m here for myself.', helpCopy: 'Click here if you need help quitting.'}, {value: 'false', label: 'I’m here for someone else.', helpCopy: 'Click here if you want resources for a friend or family member.'}]} },
-                // --- Myself Flow ---
                 { id: 'helpWithCategory', condition: d => d.isForSelf === 'true', Component: CheckboxGroup, props: { title: 'What would you like help with?', options: [{value: 'Tobacco/Nicotine', label: 'Tobacco/Nicotine'}, {value: 'Marijuana', label: 'Marijuana'}]} },
                 { id: 'quitTypes', condition: d => d.isForSelf === 'true' && (d.helpWithCategory || []).includes('Tobacco/Nicotine'), Component: CheckboxGroup, props: { title: 'Which tobacco/nicotine products?', options: [{value: 'Smoking', label: 'Smoking'}, {value: 'Vaping', label: 'Vaping'}, {value: 'Smokeless', label: 'Smokeless'}]} },
                 { id: 'usedMarijuana', condition: d => d.isForSelf === 'true' && (d.helpWithCategory || []).includes('Marijuana'), Component: RadioGroup, props: { title: 'Used any marijuana in the last 30 days?', options: ['Yes', 'No', 'Don’t know', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
-                { id: 'daysUsedMarijuana', condition: d => d.usedMarijuana === 'Yes', component: 'custom', render: () => (
-                    <div className="form-group"><h2 className="form-title">In the last 30 days, how often?</h2><input type="number" name="daysUsedMarijuana" value={formData.daysUsedMarijuana || ''} onChange={handleChange} className="form-input" min="1" max="30" placeholder="1-30"/>
-                    {['Don’t know', 'Prefer not to answer'].map(opt => ( <label key={opt} className={`checklist-item ${formData.daysUsedMarijuana === opt ? 'selected' : ''}`}> <input type="radio" name="daysUsedMarijuana" value={opt} checked={formData.daysUsedMarijuana === opt} onChange={handleChange} /> <span className="item-label">{opt}</span><span className="checkmark-icon"></span> </label> ))}</div>)},
+                { id: 'daysUsedMarijuana', condition: d => d.usedMarijuana === 'Yes', component: 'custom', render: () => ( <div className="form-group"><h2 className="form-title">In the last 30 days, how often?</h2><input type="number" name="daysUsedMarijuana" value={formData.daysUsedMarijuana || ''} onChange={handleChange} className="form-input" min="1" max="30" placeholder="1-30"/> {['Don’t know', 'Prefer not to answer'].map(opt => ( <label key={opt} className={`checklist-item ${formData.daysUsedMarijuana === opt ? 'selected' : ''}`}> <input type="radio" name="daysUsedMarijuana" value={opt} checked={formData.daysUsedMarijuana === opt} onChange={handleChange} /> <span className="item-label">{opt}</span><span className="checkmark-icon"></span> </label> ))}</div>)},
                 { id: 'marijuanaUsed', condition: d => d.usedMarijuana === 'Yes', Component: CheckboxGroup, props: { title: 'How did you use it?', options: [ {value: 'Smoked', label: 'Smoked (joints, pipes, bongs)'}, {value: 'Vaped', label: 'Vaped (vape pens, wax pens)'}, {value: 'Dabbed', label: 'Dabbed (wax, shatter, BHO)'}, {value: 'Ate', label: 'Ate (gummies, brownies, etc.)'}, {value: 'Drank', label: 'Drank (sparkling water, tea, etc.)'}, {value: 'Other', label: 'Other'}, {value: 'Don’t know', label: 'Don’t know'}, {value: 'Prefer not to answer', label: 'Prefer not to answer'} ]}},
                 { id: 'marijuanaPlanQuit', condition: d => d.usedMarijuana === 'Yes', Component: RadioGroup, props: { title: 'What are your plans for marijuana use?', options: [{value: 'Quit', label: 'Quit'}, {value: 'Reduce', label: 'Reduce'}]}},
-                // --- Someone Else Flow ---
                 { id: 'proxyQuitTypes', condition: d => d.isForSelf === 'false', Component: CheckboxGroup, props: { title: 'What are you helping them with?', helpCopy: 'We customize our coaching to your needs.', options: [{value: 'Quit Smoking', label: 'Quit Smoking'}, {value: 'Quit Vaping', label: 'Quit Vaping'}, {value: 'Quit Smokeless', label: 'Quit Smokeless'}]} },
-                // --- Common Questions ---
-                { id: 'age', component: 'custom', render: () => (
-                    <div className="form-group"><h2 className="form-title">What's your age?</h2><input type="number" id="age" name="age" value={formData.age || ''} onChange={handleChange} className="form-input" /><span className="help-copy" style={{textAlign: 'center', marginTop: '1rem'}}>Kick It California provides coaching services to people 13 years and older.</span>
-                    {formData.age && formData.age < 13 && <p className="error-message">Kick It California has coaching services for people 13 years and older, but please feel free to check out these <a href="https://kickitca.org/quit-all-kit">self-help materials.</a></p>}</div>)},
+                { id: 'age', component: 'custom', render: () => ( <div className="form-group"><h2 className="form-title">What's your age?</h2><input type="number" id="age" name="age" value={formData.age || ''} onChange={handleChange} className="form-input" /><span className="help-copy" style={{textAlign: 'center', marginTop: '1rem'}}>Kick It California provides coaching services to people 13 years and older.</span> {formData.age && formData.age < 13 && <p className="error-message">Kick It California has coaching services for people 13 years and older, but please feel free to check out these <a href="https://kickitca.org/quit-all-kit">self-help materials.</a></p>}</div>)},
                 { id: 'householdInfo', Component: CheckboxGroup, props: { title: 'Do any of these apply to your household?', options: [ { value: 'A child 5 or younger lives here.', label: 'A child 5 or younger lives here.' }, { value: 'I’m currently pregnant.', label: 'I’m currently pregnant.' }, { value: 'Someone else in my home is pregnant.', label: 'Someone else in my home is pregnant.' }, { value: 'None of the above', label: 'None of the above' } ]} },
                 { id: 'mediCal', Component: RadioGroup, props: { title: 'Do you have Medi-Cal?', helpCopy: 'This helps us get to know you better.', options: ['Yes', 'No', 'Don’t know', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
                 { id: 'identity', Component: RadioGroup, props: { title: 'How do you identify?', helpCopy: 'This helps us get to know you better.', options: ['Male', 'Female', 'In another way', 'Prefer not to answer'].map(v => ({value: v, label: v}))} },
@@ -399,37 +272,23 @@
             const isLastStep = step === visibleFlow.length - 1;
             const progress = ((step + 1) / visibleFlow.length) * 100;
 
-            return (
-                <div className="form-content">
-                    <ProgressBar progress={progress} />
-                    <div key={step} className="question-content">
-                        {currentStepData && (currentStepData.Component ? <currentStepData.Component name={currentStepData.id} value={formData[currentStepData.id]} handleChange={handleChange} {...currentStepData.props} /> : currentStepData.render())}
-                    </div>
-                    <div className="form-actions">
-                        {step > 0 && <button onClick={handleBack} className="cta-button secondary">Back</button>}
-                        <button onClick={isLastStep ? onSubmit : handleNext} className="cta-button" disabled={isLoading}>{isLastStep ? (isLoading ? 'Submitting...' : 'Submit') : 'Next'}</button>
-                    </div>
-                </div>
-            );
+            return ( <div className="form-content"> <ProgressBar progress={progress} /> <div key={step} className="question-content"> {currentStepData && (currentStepData.Component ? <currentStepData.Component name={currentStepData.id} value={formData[currentStepData.id]} handleChange={handleChange} {...currentStepData.props} /> : currentStepData.render())} </div> <div className="form-actions"> {step > 0 && <button onClick={handleBack} className="cta-button secondary">Back</button>} <button onClick={isLastStep ? onSubmit : handleNext} className="cta-button" disabled={isLoading}>{isLastStep ? (isLoading ? 'Submitting...' : 'Submit') : 'Next'}</button> </div> </div> );
         };
         
-        const CongratulationsScreen = ({ onViewResources }) => (
-            <div className="form-content ending-screen">
-                <h2>You’re all done!</h2>
-                <p>A Quit Coach will call you soon.</p>
-                <div className="form-actions">
-                    <button onClick={onViewResources} className="cta-button">See More Resources</button>
+        const FinalScreen = ({ handleRestart }) => (
+             <div className="form-content ending-screen">
+                <div className="success-icon"></div>
+                <h2>You’re all done! A Quit Coach will call you soon.</h2>
+                <p>While you wait, explore these resources to help guide you on your journey.</p>
+                <div className="resource-section">
+                    <div className="next-steps-title">Next Steps</div>
+                    <a href="https://131650.hs-sites-na2.com/quit-plan" target="_blank" rel="noopener noreferrer" className="resource-link">Create Your Quit Plan</a>
+                    <a href="https://131650.hs-sites-na2.com/kick-it-2" target="_blank" rel="noopener noreferrer" className="resource-link">Explore a Kick It Story</a>
                 </div>
-            </div>
-        );
-
-        const ResourceScreen = () => (
-             <div className="form-content resource-section">
-                <h2 className="form-title">You can Quit. We Can Help.</h2>
-                <p>While you wait for your call, explore these resources to help guide you on your journey.</p>
-                <a href="https://131650.hs-sites-na2.com/quit-plan" target="_blank" rel="noopener noreferrer" className="resource-link">Create Your Quit Plan</a>
-                <a href="https://131650.hs-sites-na2.com/kick-it-2" target="_blank" rel="noopener noreferrer" className="resource-link">Explore a Kick It Story</a>
-                <a href="https://kickitca.org" className="cta-button" style={{marginTop: '2rem'}}>Go to KickItCA.org</a>
+                <div className="form-actions">
+                     <button onClick={handleRestart} className="cta-button secondary">Start Over</button>
+                    <a href="https://131650.hs-sites-na2.com/mobile-app" target="_blank" rel="noopener noreferrer" className="cta-button">Get Our Mobile App</a>
+                </div>
             </div>
         );
 
