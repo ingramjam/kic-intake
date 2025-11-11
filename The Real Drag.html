@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Real Drag</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* -------------------------------------
+      1. SETUP & BOLDER COLOR SCHEME
+      -------------------------------------
+    */
+    
+    :root {
+      /* Bolder 2-3 color (dark) scheme with dark navy */
+      --color-bg: #0a1628;
+      --color-text: #f0f0f0;
+      --color-text-dim: #aaa; /* For less important text */
+      --color-border: #001a33;
+      
+      /* Accent Colors */
+      --color-filter: #D9824F;
+      --color-ember: #FF4500; /* Bright orange-red */
+      
+      /* Cigarette Colors */
+      --color-paper: #f4f4f4;
+      --color-ash: #444;
+      --color-ash-texture: #555;
+
+      /* Smoke Opacity */
+      --smoke-color-start: rgba(10, 22, 40, 0.9);
+      --smoke-color-mid: rgba(20, 32, 50, 0.5);
+      --smoke-color-end: rgba(10, 22, 40, 0);
+    }
+
+    /* Smoke animation keyframes */
+    @keyframes waft {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+    
+    @keyframes fadeInOut {
+      0%, 100% {
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Arial', sans-serif; /* Using new font */
+      background-color: var(--color-bg);
+      min-height: 500vh;
+      color: var(--color-text); /* Default text color for body */
+      position: relative; /* For the smoke elements */
+      overflow-x: hidden; /* Prevent horizontal scroll from fixed elements */
+      display: flex;
+      flex-direction: row; /* Mobile: horizontal layout */
+    }
+    
+    /* -------------------------------------
+      2. SMOKEY BORDERS
+      -------------------------------------
+    */
+    .smoke-overlay {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 35vh; /* Covers 35% of viewport */
+      z-index: 1000; /* On top of everything */
+      pointer-events: none; /* Allows clicks to pass through */
+      transition: opacity 0.3s ease-out; /* Smooth fade for smoke */
+      opacity: 0.7; /* Start with initial opacity */
+      animation: waft 30s linear infinite;
+    }
+
+    .smoke-top {
+      top: 0;
+      background: 
+        radial-gradient(ellipse at 50% 0%, var(--smoke-color-start) 0%, var(--smoke-color-mid) 40%, var(--smoke-color-end) 80%),
+        radial-gradient(ellipse at 20% 0%, var(--smoke-color-start) 0%, var(--smoke-color-mid) 30%, var(--smoke-color-end) 70%),
+        radial-gradient(ellipse at 80% 0%, var(--smoke-color-start) 0%, var(--smoke-color-mid) 30%, var(--smoke-color-end) 70%);
+      background-size: 200% 100%;
+    }
+
+    .smoke-bottom {
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse at 50% 100%, var(--smoke-color-start) 0%, var(--smoke-color-mid) 40%, var(--smoke-color-end) 80%),
+        radial-gradient(ellipse at 20% 100%, var(--smoke-color-start) 0%, var(--smoke-color-mid) 30%, var(--smoke-color-end) 70%),
+        radial-gradient(ellipse at 80% 100%, var(--smoke-color-start) 0%, var(--smoke-color-mid) 30%, var(--smoke-color-end) 70%);
+      background-size: 200% 100%;
+      animation-delay: -15s;
+    }
+    
+    /* -------------------------------------
+      3. CIGARETTE STYLES (CRUNCHY CSS)
+      -------------------------------------
+    */
+    
+    .cigarette-visual {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 50px;
+      height: 100vh;
+      display: flex;
+      z-index: 10;
+      background-color: var(--color-bg);
+      flex-shrink: 0; /* Prevent shrinking */
+      will-change: transform; /* GPU acceleration hint */
+      transition: opacity 0.3s ease, filter 0.3s ease; /* Add transition for dimming */
+    }
+
+    /* Dim the cigarette when CTA is hovered */
+    body:has(.cta-section a.button:hover) .cigarette-visual {
+      opacity: 0.3;
+      filter: brightness(0.5);
+    }
+
+    /* .cigarette container for flex flow */
+    .cigarette {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .ash {
+      height: 0; /* Starts at 0, grows upwards */
+      background-color: var(--color-ash);
+      background-image: linear-gradient(45deg, var(--color-ash-texture) 25%, transparent 25%),
+                        linear-gradient(-45deg, var(--color-ash-texture) 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, var(--color-ash-texture) 75%),
+                        linear-gradient(-45deg, transparent 75%, var(--color-ash-texture) 75%);
+      background-size: 10px 10px;
+      transition: height 0.1s linear;
+      flex-shrink: 0;
+      order: 1; /* At the top */
+      border-left: 2px solid #222;
+      border-right: 2px solid #222;
+    }
+    
+    .ember {
+      height: 5px; /* Fixed height for the glowing tip */
+      background-color: var(--color-ember);
+      box-shadow: 0 0 10px 3px var(--color-ember), 
+                  0 0 15px 6px #FF8C00,
+                  0 0 3px 1px #fff inset;
+      z-index: 2;
+      flex-shrink: 0;
+      order: 2; /* Below ash */
+    }
+
+    .paper {
+      flex-grow: 1; /* Takes up all remaining space */
+      background-color: var(--color-paper);
+      transition: height 0.1s linear;
+      order: 3; /* Below ember */
+      flex-shrink: 0; /* This will be set by JS */
+      border-left: 2px solid #000;
+      border-right: 2px solid #000;
+      /* Crunchy lines */
+      background-image: repeating-linear-gradient(
+        -30deg,
+        transparent,
+        transparent 4px,
+        rgba(0,0,0,0.1) 4px,
+        rgba(0,0,0,0.1) 5px
+      );
+    }
+
+    .filter {
+      height: 100px; /* Fixed height */
+      background-color: var(--color-filter);
+      flex-shrink: 0;
+      order: 4; /* At the bottom */
+      border-top: 3px solid var(--color-border);
+      border-left: 2px solid #000;
+      border-right: 2px solid #000;
+      /* Cork texture */
+      background-image: radial-gradient(circle at 10px 10px, rgba(0,0,0,0.1) 1px, transparent 2px),
+                        radial-gradient(circle at 25px 20px, rgba(0,0,0,0.1) 1px, transparent 2px),
+                        radial-gradient(circle at 40px 30px, rgba(0,0,0,0.1) 1px, transparent 2px),
+                        radial-gradient(circle at 15px 40px, rgba(0,0,0,0.1) 1px, transparent 2px),
+                        radial-gradient(circle at 35px 50px, rgba(0,0,0,0.1) 1px, transparent 2px);
+      background-size: 50px 50px;
+    }
+    
+    /* -------------------------------------
+      4. TIMELINE CONTENT (ALIGNED)
+      -------------------------------------
+    */
+    
+    .timeline-content {
+      width: auto;
+      /* Adjusted padding for alignment */
+      padding: 20px 10% 20px 20px;
+    }
+    
+    /* Infographic Title Style */
+    h1 {
+      font-size: 4rem;
+      color: var(--color-text);
+      font-weight: 900;
+      margin-top: 50px; /* Give some space from top */
+      margin-bottom: 2rem;
+      line-height: 1.1;
+      text-align: center; /* Centered H1 */
+    }
+    
+    /* Intro text under H1 */
+    .intro-text {
+      font-size: 1.3rem;
+      line-height: 1.8;
+      color: var(--color-text);
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 30vh; /* Reduced from 150vh for less space */
+      padding: 20px;
+    }
+    
+    .intro-text p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .intro-text strong {
+      color: var(--color-filter);
+      font-weight: 700;
+    }
+    
+    /* Scroll indicator arrows */
+    .scroll-indicator {
+      text-align: center;
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .scroll-text {
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      color: var(--color-text-dim);
+      text-transform: lowercase;
+    }
+    
+    .scroll-arrow {
+      width: 24px;
+      height: 24px;
+      border-left: 2px solid var(--color-text-dim);
+      border-bottom: 2px solid var(--color-text-dim);
+      transform: rotate(-45deg);
+      animation: bounce 2s infinite;
+    }
+    
+    /* Boxless Timeline Step */
+    .timeline-step {
+      padding: 20px 0;
+      margin-bottom: 80vh; /* Reduced from 100vh for less space between sections */
+      color: var(--color-text);
+      
+      /* Start hidden for fade-in */
+      opacity: 0;
+      transform: translateY(100px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    
+    /* This class is added by JavaScript */
+    .timeline-step.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Restyled Headers */
+    .timeline-step h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--color-filter);
+    }
+    
+    /* Restyled/Condensed Text */
+    .timeline-step p {
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: var(--color-text-dim);
+      margin: 0;
+    }
+
+    /* -------------------------------------
+      5. CTA SECTION
+      -------------------------------------
+    */
+    .cta-section {
+      position: relative;
+      z-index: 100; /* Higher than cigarette (z-index: 10) so CTA can go over it */
+      text-align: center;
+      padding: 100px 20px;
+      margin-top: 100px;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .cta-section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cta-section h2 {
+      font-size: 3rem;
+      color: var(--color-filter);
+      margin-bottom: 30px;
+    }
+
+    .cta-section a.button {
+      display: inline-block;
+      background-color: var(--color-filter);
+      color: var(--color-bg); /* Dark text on orange button */
+      font-size: 1.8rem;
+      font-weight: 900;
+      padding: 15px 40px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8); /* Black drop shadow */
+    }
+
+    .cta-section a.button:hover {
+      background-color: #e0743a; /* Slightly darker orange */
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9); /* Stronger shadow on hover */
+    }
+
+    .cta-section p {
+      margin-top: 40px;
+      font-size: 1.1rem;
+      color: var(--color-text-dim);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+
+    /* -------------------------------------
+      6. DESKTOP STYLES (MEDIA QUERY)
+      -------------------------------------
+    */
+    
+    @media (min-width: 768px) {
+      body {
+        padding-left: 0;
+      }
+      
+      .cigarette-visual {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 400px; /* Fixed height for desktop */
+        background-color: transparent; /* No bg, just the .cigarette */
+        border: 3px solid var(--color-border);
+        box-shadow: 8px 8px 0px #000; 
+      }
+      
+      .cigarette {
+        height: 100%;
+        /* Remove borders from inner elements on desktop */
+      }
+      
+      .ash {
+        /* Ash still grows */
+        border-left: none;
+        border-right: none;
+      }
+
+      .ember {
+        /* Ember still fixed 5px height */
+      }
+      
+      .paper {
+        height: 315px; /* 400 - 80(filter) - 5(ember) */
+        border-left: none;
+        border-right: none;
+      }
+
+      .filter {
+        height: 80px; /* Shorter filter for desktop */
+        border-left: none;
+        border-right: none;
+        border-top: 3px solid var(--color-border);
+      }
+      
+      .timeline-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 50vh 40px 100vh 40px;
+      }
+
+      /* H1 on desktop */
+      h1 {
+        font-size: 6rem;
+        text-align: center;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .timeline-step {
+        width: 40%;
+        height: auto;
+        margin-bottom: 100px;
+        padding: 0; /* Remove padding as it's boxless */
+      }
+      
+      .timeline-step:nth-child(even) {
+        margin-left: 55%;
+      }
+      
+      .timeline-step:nth-child(odd) {
+        margin-right: 55%;
+        text-align: right;
+      }
+
+      .timeline-step:nth-child(odd) h2 {
+        text-align: right;
+      }
+      .timeline-step:nth-child(odd) p {
+        text-align: right;
+      }
+
+      /* CTA section on desktop */
+      .cta-section {
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  </style>
+  <script charset="utf-8" type="text/javascript" src="//js-na2.hsforms.net/forms/embed/v2.js"></script>
+</head>
+<body>
+
+  <!-- Smokey Overlays -->
+  <div class="smoke-overlay smoke-top"></div>
+  <div class="smoke-overlay smoke-bottom"></div>
+
+  <div class="cigarette-visual">
+    <!-- REVERTED to pure CSS cigarette -->
+    <div class="cigarette">
+      <div class="ash"></div>
+      <div class="ember"></div> 
+      <div class="paper"></div>
+      <div class="filter"></div>
+    </div>
+  </div>
+
+  <div class="timeline-content">
+    
+    <h1>The Real Drag</h1>
+    
+    <div class="intro-text">
+      <p><strong>Better Health is Just Days Away</strong></p>
+      <p>We'll be honest. Quitting smoking is tough. The first week can be especially difficult. Thankfully, the benefits start piling up quickly. And this can give you the motivation you need to keep going.</p>
+      <p>Here's what happens from the moment you put out your last cigarette.</p>
+      <div class="scroll-indicator">
+        <div class="scroll-text">scroll</div>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+
+    <section class="timeline-step">
+      <h2>The Last Puff</h2>
+      <p>Your body begins to recover the moment you quit. This is the timeline of healing.</p>
+    </section>
+    
+    <section class="timeline-step">
+      <h2>After 20 Minutes</h2>
+      <p>Heart rate and blood pressure, spiked by nicotine, drop towards normal levels.</p>
+    </section>
+    
+    <section class="timeline-step">
+      <h2>After 12 Hours</h2>
+      <p>Carbon monoxide (a poison) drops to normal, allowing blood to carry oxygen properly.</p>
+    </section>
+    
+    <section class="timeline-step">
+      <h2>After 48 Hours</h2>
+      <p>Nerve endings regrow. Your sense of smell and taste improve.</p>
+    </section>
+    
+    <section class="timeline-step">
+      <h2>After 2 Weeks</h2>
+      <p>Circulation and lung function improve. Exercise becomes easier.</p>
+    </section>
+    
+    <section class="timeline-step">
+      <h2>After 1 Year</h2>
+      <p>Your risk of coronary heart disease is cut in half. A massive milestone.</p>
+    </section>
+
+    <section class="timeline-step">
+      <h2>After 5 Years</h2>
+      <p>Stroke risk is reduced to that of a non-smoker's as blood vessels heal.</p>
+    </section>
+    
+    <section class="timeline-step">
+      <h2>After 10 Years</h2>
+      <p>Your risk of dying from lung cancer is about half that of a person who still smokes.</p>
+    </section>
+
+    <section class="timeline-step">
+      <h2>After 15 Years</h2>
+      <p>Your risk of coronary heart disease is now the same as a non-smoker's. It's as if you never smoked.</p>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <h2>Ready to Quit?</h2>
+      <a href="https://kickitca.org/quit-now" target="_blank" class="button">Quit Now</a>
+      <p>Free quit coaching is available to help you on your journey. You don't have to do it alone.</p>
+    </section>
+
+  </div>
+
+  <script>
+    /* -------------------------------------
+      7. JAVASCRIPT SCROLL "BRAIN" & SMOKE EFFECT
+      -------------------------------------
+    */
+    
+    // Static CSS heights
+    const MOBILE_FILTER_CSS_HEIGHT = 100;
+    const MOBILE_EMBER_CSS_HEIGHT = 5;
+    const DESKTOP_CIGARETTE_CSS_HEIGHT = 400; // From media query
+    const DESKTOP_FILTER_CSS_HEIGHT = 80;    // From media query
+    const DESKTOP_EMBER_CSS_HEIGHT = 5;     // From media query
+    
+    // Get elements
+    const paper = document.querySelector('.paper');
+    const ash = document.querySelector('.ash');
+    // const ember = document.querySelector('.ember'); // No longer needed for JS
+
+    // Smoke elements
+    const smokeTop = document.querySelector('.smoke-top');
+    const smokeBottom = document.querySelector('.smoke-bottom');
+    const SMOKE_INITIAL_OPACITY = 0.7;
+
+    function handleScroll() {
+      // 1. Determine Total Burnable Height
+      let totalBurnableHeight;
+      if (window.innerWidth < 768) {
+        // On mobile, burnable height is the full viewport minus static elements
+        totalBurnableHeight = window.innerHeight - MOBILE_FILTER_CSS_HEIGHT - MOBILE_EMBER_CSS_HEIGHT;
+      } else {
+        // On desktop, it's the fixed height minus static elements
+        totalBurnableHeight = DESKTOP_CIGARETTE_CSS_HEIGHT - DESKTOP_FILTER_CSS_HEIGHT - DESKTOP_EMBER_CSS_HEIGHT;
+      }
+      
+      // 2. Calculate Scroll Percentage - make cigarette finish at CTA bottom
+      const ctaSection = document.querySelector('.cta-section');
+      const ctaBottom = ctaSection.offsetTop + ctaSection.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const pixelsScrolled = window.scrollY;
+      
+      // Calculate scroll percentage based on CTA bottom position
+      // Cigarette should be fully burned when CTA bottom reaches viewport top
+      const burnDistance = ctaBottom;
+      const scrollPercent = burnDistance > 0 ? Math.min(pixelsScrolled / burnDistance, 1) : 0;
+      
+      /* 3. Height Calculation */
+      let newAshHeight = totalBurnableHeight * scrollPercent;
+      let newPaperHeight = totalBurnableHeight - newAshHeight;
+      
+      // 4. Apply New Heights (clamped)
+      const clampedAshHeight = Math.min(totalBurnableHeight, Math.max(0, newAshHeight));
+      const clampedPaperHeight = Math.min(totalBurnableHeight, Math.max(0, newPaperHeight));
+      
+      ash.style.height = `${clampedAshHeight}px`;
+      paper.style.height = `${clampedPaperHeight}px`; // This makes the paper shrink
+
+      /* 5. Dim cigarette when CTA is over it */
+      const cigaretteVisual = document.querySelector('.cigarette-visual');
+      const cigaretteRect = cigaretteVisual.getBoundingClientRect();
+      const ctaRect = ctaSection.getBoundingClientRect();
+      
+      // Check if CTA overlaps with cigarette
+      const isOverlapping = !(ctaRect.right < cigaretteRect.left || 
+                             ctaRect.left > cigaretteRect.right || 
+                             ctaRect.bottom < cigaretteRect.top || 
+                             ctaRect.top > cigaretteRect.bottom);
+      
+      if (isOverlapping) {
+        cigaretteVisual.style.opacity = '0.3';
+        cigaretteVisual.style.filter = 'brightness(0.5)';
+      } else {
+        cigaretteVisual.style.opacity = '1';
+        cigaretteVisual.style.filter = 'brightness(1)';
+      }
+
+      /* 5. Ember Following is now automatic via CSS flex order */
+      
+      /* 6. Smokey Border Effect */
+      const scrollThreshold = 0.1; // 10% of the page
+      
+      // Top smoke fades out as you scroll down
+      if (scrollPercent > scrollThreshold) {
+        smokeTop.style.opacity = Math.max(0, SMOKE_INITIAL_OPACITY - (scrollPercent - scrollThreshold) / (1 - scrollThreshold) * SMOKE_INITIAL_OPACITY);
+      } else {
+        smokeTop.style.opacity = SMOKE_INITIAL_OPACITY;
+      }
+
+      // Bottom smoke fades out as you scroll up from the bottom
+      const scrollPercentFromBottom = 1 - scrollPercent;
+      if (scrollPercentFromBottom > scrollThreshold) {
+        smokeBottom.style.opacity = Math.max(0, SMOKE_INITIAL_OPACITY - (scrollPercentFromBottom - scrollThreshold) / (1 - scrollThreshold) * SMOKE_INITIAL_OPACITY);
+      } else {
+        smokeBottom.style.opacity = SMOKE_INITIAL_OPACITY;
+      }
+    }
+    
+    // Add scroll/resize listeners
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+    document.addEventListener('DOMContentLoaded', handleScroll);
+    
+    
+    /* -------------------------------------
+      8. JAVASCRIPT FADE-IN "EYES"
+      -------------------------------------
+    */
+    
+    // Observe timeline steps AND the CTA section
+    const sectionsToObserve = document.querySelectorAll('.timeline-step, .cta-section');
+    
+    const observerOptions = {
+      root: null,
+      threshold: 0.1 // Reduced from 0.3 to 0.1 so sections appear sooner
+    };
+
+    const observerCallback = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        } else {
+          // Optional: Re-fade when scrolling up for a more dynamic feel
+          // entry.target.classList.remove('is-visible');
+        }
+      });
+    };
+    
+    const stepObserver = new IntersectionObserver(observerCallback, observerOptions);
+    
+    sectionsToObserve.forEach(section => {
+      stepObserver.observe(section);
+    });
+    
+  </script>
+
+</body>
+</html>

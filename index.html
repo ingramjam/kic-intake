@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://js-na2.hsforms.net/forms/embed/131650.js" defer></script>
     <style>
         :root {
             --color-primary-light: #002039; --color-secondary-light: #FF9500;
@@ -105,6 +106,7 @@
 </head>
 <body>
     <div id="root"></div>
+    <div class="hs-form-frame" data-region="na2" data-form-id="f608bbd0-58d5-4fb7-93bb-768bf02a5e2d" data-portal-id="131650" style="display: none;"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
@@ -138,7 +140,13 @@
                 setApiError(''); 
                 if (type === 'checkbox') {
                     const currentValues = formData[name] || []; let newValues;
-                    if (checked) { if (value === 'none') { newValues = ['none']; } else { newValues = [...currentValues.filter(v => v !== 'none'), value]; }} 
+                    if (checked) { 
+                        if (value === 'none' || value === 'None of the above') { 
+                            newValues = [value]; 
+                        } else { 
+                            newValues = [...currentValues.filter(v => v !== 'none' && v !== 'None of the above'), value]; 
+                        }
+                    } 
                     else { newValues = currentValues.filter(v => v !== value); }
                     setFormData(prev => ({ ...prev, [name]: newValues }));
                 } else { setFormData(prev => ({ ...prev, [name]: value })); }
@@ -156,6 +164,43 @@
                 setErrors(newErrors); return Object.keys(newErrors).length === 0;
             };
 
+            const submitToHubSpot = async (data, isPartial = false) => {
+                const portalId = '131650';
+                const formGuid = 'f608bbd0-58d5-4fb7-93bb-768bf02a5e2d';
+                const url = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formGuid}`;
+                
+                const fields = Object.entries(data).map(([name, value]) => ({
+                    name: name,
+                    value: Array.isArray(value) ? value.join(', ') : String(value)
+                }));
+
+                const payload = {
+                    fields: fields,
+                    context: {
+                        pageUri: window.location.href,
+                        pageName: document.title
+                    }
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'HubSpot submission failed');
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('HubSpot API Error:', error);
+                    throw error;
+                }
+            };
+
             const handleSelfIntake = async () => {
                 if (!validateStep1()) return;
                 setIsLoading(true); setApiError('');
@@ -170,8 +215,15 @@
                     return;
                 }
                 
-                setApiError('Live API calls are disabled for this demo. Please use Demo Mode.');
-                setIsLoading(false);
+                try {
+                    const response = await submitToHubSpot(formData, true);
+                    setApiData({ cxId: response.inlineMessage || 'success', authToken: 'token-' + Date.now() });
+                    setAppState('FORM_STEP_2');
+                } catch (error) {
+                    setApiError('Unable to submit form. Please try again or contact support.');
+                } finally {
+                    setIsLoading(false);
+                }
             };
 
             const handleFullIntake = async () => {
@@ -186,8 +238,15 @@
                     return;
                 }
                 
-                setApiError('Live API calls are disabled for this demo. Please use Demo Mode.');
-                setIsLoading(false);
+                try {
+                    const fullData = { ...formData, ...apiData };
+                    await submitToHubSpot(fullData, false);
+                    setAppState('FINAL');
+                } catch (error) {
+                    setApiError('Unable to submit form. Please try again or contact support.');
+                } finally {
+                    setIsLoading(false);
+                }
             };
             
             return (
@@ -272,7 +331,9 @@
             const isLastStep = step === visibleFlow.length - 1;
             const progress = ((step + 1) / visibleFlow.length) * 100;
 
-            return ( <div className="form-content"> <ProgressBar progress={progress} /> <div key={step} className="question-content"> {currentStepData && (currentStepData.Component ? <currentStepData.Component name={currentStepData.id} value={formData[currentStepData.id]} handleChange={handleChange} {...currentStepData.props} /> : currentStepData.render())} </div> <div className="form-actions"> {step > 0 && <button onClick={handleBack} className="cta-button secondary">Back</button>} <button onClick={isLastStep ? onSubmit : handleNext} className="cta-button" disabled={isLoading}>{isLastStep ? (isLoading ? 'Submitting...' : 'Submit') : 'Next'}</button> </div> </div> );
+            if (!currentStepData) return null;
+
+            return ( <div className="form-content"> <ProgressBar progress={progress} /> <div key={step} className="question-content"> {currentStepData.Component ? <currentStepData.Component name={currentStepData.id} value={formData[currentStepData.id]} handleChange={handleChange} {...currentStepData.props} /> : currentStepData.render()} </div> <div className="form-actions"> {step > 0 && <button onClick={handleBack} className="cta-button secondary">Back</button>} <button onClick={isLastStep ? onSubmit : handleNext} className="cta-button" disabled={isLoading}>{isLastStep ? (isLoading ? 'Submitting...' : 'Submit') : 'Next'}</button> </div> </div> );
         };
         
         const FinalScreen = ({ handleRestart }) => (
